@@ -449,4 +449,49 @@ Rama main siempre deployable.
 - Instalar componentes Cult UI con: npx shadcn@beta add @cult-ui/<nombre>
 - DesktopLayout, TabletLayout, MobileLayout
 - Integrar backgrounds animados con módulos
-- Bug conocido: verificar que index.html no tenga CDN de Tailwind
+
+---
+
+## 🚨 Bug activo — EasyPanel "Service is not reachable"
+
+### Fecha: 2026-06-09
+### Estado: BUILD ✅ — PROXY ❌
+
+### Qué se hizo
+1. Se confirmó que el código fuente está 100% limpio — cero CDN en index.html, src/, public/
+2. Se descubrió que EasyPanel servía un HTML antiguo de 840 líneas con React CDN + Tailwind CDN
+   — ese archivo NO existía en el repo, era una imagen Docker cacheada de una sesión anterior
+3. Se destruyó y recreó el servicio `harmony-lab` en EasyPanel desde cero
+4. Build Docker exitoso: `dist/index.html 1.06 kB`, `79.28 kB CSS`, `0 errores`
+5. Se actualizó el secret `EASYPANEL_WEBHOOK_URL` en GitHub Actions con el nuevo webhook:
+   `http://89.116.167.180:3000/api/deploy/8783735a2ab991b4b131b9a3570d34503eed3d11836f7669`
+6. Se configuró el dominio en EasyPanel:
+   `https://clawdbot-harmony-lab.u555aa.easypanel.host → http://clawdbot_harmony-lab:4000/`
+
+### Problema actual
+El proxy de EasyPanel devuelve "Service is not reachable" a pesar de que:
+- El build termina con `### Success`
+- El contenedor corre (CPU 0.1%, Memoria 31.7 MB)
+- El puerto configurado es 4000 (correcto según Dockerfile y server.js)
+
+### Posibles causas a investigar en la próxima sesión
+1. **Nombre del contenedor incorrecto** — EasyPanel puede usar `harmony-lab` sin prefijo
+   en su red Docker interna. Probar cambiar destino a `http://harmony-lab:4000/`
+2. **server.js falla al arrancar** — Verificar logs del contenedor en EasyPanel → 
+   harmony-lab → ícono de terminal (>_). Buscar: `Harmony Lab Pro corriendo en puerto 4000`
+3. **package.json `type: "module"`** — server.js usa `import` (ESM). Verificar que
+   `package.json` tenga `"type": "module"` para que Node lo ejecute correctamente
+4. **`npm ci --omit=dev` falla** — Si framer-motion u otras deps están en dependencies
+   (no devDependencies), el servidor de producción las necesita
+
+### Comando de diagnóstico rápido
+En EasyPanel → harmony-lab → pestaña terminal (ícono >_):
+```bash
+node server.js
+```
+Si falla, el error indicará la causa exacta.
+
+### Webhook de deploy (nueva URL tras recrear servicio)
+```
+http://89.116.167.180:3000/api/deploy/8783735a2ab991b4b131b9a3570d34503eed3d11836f7669
+```
