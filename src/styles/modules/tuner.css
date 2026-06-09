@@ -1,0 +1,333 @@
+/**
+ * tuner.css — Harmony Lab Pro · Sesión 3
+ * Identidad: Instrumentación analógica — aguja, VU meter vintage, dial.
+ * Cuando está afinado (±5 cents) todo vira a verde brillante con pulse.
+ * Cult UI: animated-number para la frecuencia Hz y cents en tiempo real.
+ *          dynamic-island para notificación "In Tune ✓".
+ * Background: FrequencyWave — AnalyserNode activo o sinusoide estática.
+ */
+
+/* ── Contenedor del Tuner ────────────────────────────────────────────── */
+
+.tuner-module {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-6);
+  padding: var(--s-8) var(--s-4) var(--s-6);
+  position: relative;
+  min-height: 480px;
+  justify-content: center;
+}
+
+/* ── Display principal — nota detectada ─────────────────────────────── */
+
+.tuner-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-3);
+  position: relative;
+  z-index: 1;
+}
+
+/* Nota detectada — Syne 800, tamaño máximo */
+.tuner-note-name {
+  font-family: var(--font-display);
+  font-size: var(--text-4xl);       /* 56px */
+  font-weight: var(--fw-extrabold);
+  letter-spacing: var(--ls-tight);
+  line-height: 1;
+  color: var(--c-text);
+  transition: color var(--dur-normal) var(--ease-out),
+              text-shadow var(--dur-normal) var(--ease-out);
+  user-select: none;
+}
+
+/* Estados de afinación */
+.tuner-note-name.intune {
+  color: var(--tuner-intune-color);
+  text-shadow: 0 0 20px rgba(16, 185, 129, 0.5),
+               0 0 40px rgba(16, 185, 129, 0.2);
+}
+.tuner-note-name.flat {
+  color: var(--tuner-flat-color);
+  text-shadow: 0 0 16px rgba(0, 204, 224, 0.4);
+}
+.tuner-note-name.sharp {
+  color: var(--tuner-sharp-color);
+  text-shadow: 0 0 16px rgba(232, 80, 58, 0.4);
+}
+.tuner-note-name.silent {
+  color: var(--c-dim);
+  text-shadow: none;
+}
+
+/* Subíndice de octava */
+.tuner-octave {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--fw-bold);
+  color: var(--c-muted);
+  vertical-align: sub;
+  line-height: 1;
+  margin-left: 2px;
+}
+
+/* ── Display de cents ────────────────────────────────────────────────── */
+
+.tuner-cents-display {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+
+.tuner-cents-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xl);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-wider);
+  line-height: 1;
+  color: var(--c-text-secondary);
+  transition: color var(--dur-normal) var(--ease-out);
+  min-width: 80px;
+  text-align: center;
+}
+.tuner-cents-value.intune { color: var(--tuner-intune-color); }
+.tuner-cents-value.flat   { color: var(--tuner-flat-color); }
+.tuner-cents-value.sharp  { color: var(--tuner-sharp-color); }
+
+.tuner-cents-unit {
+  font-family: var(--font-condensed);
+  font-size: var(--text-xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-dim);
+}
+
+/* ── Barra VU meter de cents ─────────────────────────────────────────── */
+
+.tuner-meter {
+  width: min(360px, 90%);
+  position: relative;
+  z-index: 1;
+}
+
+/* Track de la barra */
+.tuner-meter-track {
+  height: 8px;
+  background: var(--c-elevated);
+  border: 1px solid var(--c-border-subtle);
+  border-radius: var(--r-full);
+  position: relative;
+  overflow: visible;
+}
+
+/* Línea central — punto cero */
+.tuner-meter-center {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  background: var(--c-border);
+  border-radius: 1px;
+}
+
+/* Fill — desplazamiento desde el centro */
+.tuner-meter-fill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: var(--r-full);
+  background: var(--c-text-secondary);
+  transition: width var(--dur-fast) var(--ease-snappy),
+              left  var(--dur-fast) var(--ease-snappy),
+              background var(--dur-normal) var(--ease-out),
+              box-shadow  var(--dur-normal) var(--ease-out);
+  /* JS actualiza width, left y background según cents value:
+     centrado = left:50%, width:2px (puntero)
+     flat  = left: 50% - offset, width: offset
+     sharp = left: 50%,          width: offset            */
+}
+
+.tuner-meter-fill.intune {
+  background: var(--tuner-intune-color);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+  width: 2px !important;
+  left: 50% !important;
+}
+.tuner-meter-fill.flat {
+  background: var(--tuner-flat-color);
+  box-shadow: 0 0 6px rgba(0, 204, 224, 0.4);
+}
+.tuner-meter-fill.sharp {
+  background: var(--tuner-sharp-color);
+  box-shadow: 0 0 6px rgba(232, 80, 58, 0.4);
+}
+
+/* Aguja — puntero principal sobre la barra */
+.tuner-meter-needle {
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--c-text);
+  transform: translateX(-50%);
+  transition: left var(--dur-fast) var(--ease-snappy),
+              background var(--dur-normal) var(--ease-out),
+              box-shadow  var(--dur-normal) var(--ease-out);
+  /* JS: left = 50% + (cents / maxCents) * 50%  */
+}
+.tuner-meter-needle.intune {
+  background: var(--tuner-intune-color);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
+}
+.tuner-meter-needle.flat   { background: var(--tuner-flat-color); }
+.tuner-meter-needle.sharp  { background: var(--tuner-sharp-color); }
+
+/* Labels de la barra (-50, 0, +50) */
+.tuner-meter-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2px;
+  margin-top: var(--s-2);
+}
+.tuner-meter-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--c-dim);
+  letter-spacing: 0.06em;
+}
+
+/* Zonas de color en el track */
+.tuner-meter-track::before {
+  content: '';
+  position: absolute;
+  left: 30%;
+  right: 30%;
+  top: 0; bottom: 0;
+  background: rgba(16, 185, 129, 0.08);
+  border-radius: var(--r-full);
+  pointer-events: none;
+}
+
+/* ── Frecuencia Hz ───────────────────────────────────────────────────── */
+
+.tuner-freq-display {
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  font-weight: var(--fw-regular);
+  letter-spacing: var(--ls-wider);
+  color: var(--c-muted);
+  transition: color var(--dur-normal);
+  user-select: none;
+}
+.tuner-freq-display .freq-value { color: var(--c-text-secondary); }
+.tuner-freq-display.intune .freq-value { color: var(--tuner-intune-color); }
+.tuner-freq-display .freq-unit {
+  font-size: var(--text-xs);
+  color: var(--c-dim);
+  margin-left: 3px;
+  font-weight: var(--fw-regular);
+  letter-spacing: var(--ls-wide);
+}
+
+/* ── Pulso in-tune — 3 ciclos y para ─────────────────────────────────── */
+
+.tuner-intune-ring {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  border: 2px solid var(--tuner-intune-color);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Framer Motion en el componente React:
+   animate={{ scale:[1,1.15,1], opacity:[0.6,0,0] }}
+   transition={{ duration:0.4, repeat:2, repeatType:"loop" }}
+   Disparado cuando Math.abs(cents) <= tuner-in-tune-cents (±5)       */
+
+/* ── Botón de micrófono ──────────────────────────────────────────────── */
+
+.tuner-mic-btn {
+  position: relative;
+  z-index: 1;
+  /* Usa .btn .btn-secondary .btn-lg */
+}
+
+.tuner-mic-btn.listening {
+  border-color: var(--c-green);
+  color: var(--c-green);
+  background: var(--c-green-glow);
+  box-shadow: var(--glow-green);
+  animation: micPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes micPulse {
+  0%, 100% { box-shadow: var(--glow-green); }
+  50%       { box-shadow: 0 0 16px rgba(16,185,129,0.6), 0 0 32px rgba(16,185,129,0.2); }
+}
+
+/* ── Referencia de afinación ─────────────────────────────────────────── */
+
+.tuner-reference {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  font-family: var(--font-condensed);
+  font-size: var(--text-xs);
+  color: var(--c-muted);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+}
+
+.tuner-reference-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-secondary);
+  letter-spacing: var(--ls-wider);
+}
+
+/* ── Background FrequencyWave ────────────────────────────────────────── */
+/* Canvas 2D. AnalyserNode del AudioContext cuando está activo,
+   sinusoide suave animada en CSS cuando silencio.
+   z-index: var(--z-bg), pointer-events: none, opacity ≤0.15           */
+.tuner-wave-bg {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-bg);
+  pointer-events: none;
+  opacity: var(--bg-default-opacity);
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+.tuner-wave-bg.active { opacity: var(--bg-active-opacity); }
+
+/* Sinusoide CSS de fallback (cuando no hay AudioContext) */
+.tuner-static-wave {
+  position: absolute;
+  bottom: 20%;
+  left: 0; right: 0;
+  height: 60px;
+  pointer-events: none;
+  opacity: 0.1;
+  animation: staticWaveFloat 4s ease-in-out infinite;
+}
+@keyframes staticWaveFloat {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .tuner-note-name { font-size: var(--text-3xl); }
+  .tuner-cents-value { font-size: var(--text-xl); }
+  .tuner-meter { width: 90%; }
+  .tuner-module { padding: var(--s-6) var(--s-3); gap: var(--s-4); }
+}

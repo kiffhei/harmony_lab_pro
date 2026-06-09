@@ -1,0 +1,344 @@
+/**
+ * song-analyzer.css — Harmony Lab Pro · Sesión 3
+ * Identidad: Laboratorio de señal — osciloscopio, visualizador espectral,
+ * pantalla de lectura. Todo en cian eléctrico sobre negro profundo.
+ * Cult UI: shader-lens-blur para el fondo espectral.
+ *          distorted-glass para el panel de resultados.
+ *          animated-number para BPM y frecuencias en tiempo real.
+ * Background: FrequencyWave — canvas con AnalyserNode.
+ */
+
+/* ── Contenedor del Song Analyzer ────────────────────────────────────── */
+
+.analyzer-module {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  padding: var(--s-5) var(--s-4);
+  position: relative;
+  min-height: 480px;
+}
+
+/* ── Upload zone ─────────────────────────────────────────────────────── */
+
+.analyzer-upload {
+  border: 2px dashed var(--c-border);
+  border-radius: var(--r-lg);
+  padding: var(--s-10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-4);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-normal) var(--ease-out),
+    background   var(--dur-normal) var(--ease-out);
+  background: var(--c-elevated);
+  text-align: center;
+}
+
+.analyzer-upload:hover,
+.analyzer-upload.drag-over {
+  border-color: var(--c-electric-cyan);
+  background: rgba(0, 204, 224, 0.04);
+}
+
+.analyzer-upload.drag-over {
+  border-style: solid;
+  box-shadow: 0 0 20px rgba(0, 204, 224, 0.12);
+}
+
+.analyzer-upload-icon {
+  color: var(--c-muted);
+  transition: color var(--dur-normal);
+}
+.analyzer-upload:hover .analyzer-upload-icon,
+.analyzer-upload.drag-over .analyzer-upload-icon {
+  color: var(--c-electric-cyan);
+}
+
+.analyzer-upload-text {
+  font-family: var(--font-condensed);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+.analyzer-upload:hover .analyzer-upload-text { color: var(--c-text-secondary); }
+
+.analyzer-upload-sub {
+  font-size: var(--text-xs);
+  color: var(--c-dim);
+  margin-top: calc(-1 * var(--s-2));
+}
+
+/* ── Pantalla de osciloscopio ────────────────────────────────────────── */
+
+.analyzer-oscilloscope {
+  background: #000810;
+  border: 1px solid #0a2040;
+  border-radius: var(--r-sm);
+  position: relative;
+  overflow: hidden;
+  height: 120px;
+}
+
+/* Grid del osciloscopio — estilo hardware vintage */
+.analyzer-osc-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0, 80, 160, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 80, 160, 0.18) 1px, transparent 1px);
+  background-size: 25% 25%;
+}
+
+/* Línea central horizontal */
+.analyzer-osc-center {
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(0, 100, 200, 0.25);
+  pointer-events: none;
+}
+
+/* Canvas para la onda — dibujado por React con AnalyserNode */
+.analyzer-osc-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Overlay CRT — efecto pantalla analógica */
+.analyzer-osc-crt {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.06) 2px,
+    rgba(0, 0, 0, 0.06) 4px
+  );
+  pointer-events: none;
+  border-radius: var(--r-sm);
+}
+
+/* Label de modo */
+.analyzer-osc-label {
+  position: absolute;
+  top: var(--s-2);
+  left: var(--s-3);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.12em;
+  color: rgba(0, 204, 224, 0.4);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Barra de progreso del análisis ──────────────────────────────────── */
+
+.analyzer-progress-bar {
+  height: 3px;
+  background: var(--c-border-subtle);
+  border-radius: var(--r-full);
+  overflow: hidden;
+}
+
+.analyzer-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--c-electric-cyan), var(--c-violet));
+  border-radius: var(--r-full);
+  transition: width 200ms var(--ease-snappy);
+  box-shadow: 0 0 8px rgba(0, 204, 224, 0.4);
+}
+
+/* ── Panel de resultados del análisis ───────────────────────────────── */
+
+.analyzer-results {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-3);
+}
+
+/* Celda de dato — estilo pantalla de rack */
+.analyzer-data-cell {
+  background: #040810;
+  border: 1px solid #0a1830;
+  border-radius: var(--r-sm);
+  padding: var(--s-3) var(--s-4);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Brillo de borde superior — efecto LED de pantalla */
+.analyzer-data-cell::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: var(--c-electric-cyan);
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.analyzer-data-label {
+  font-family: var(--font-condensed);
+  font-size: var(--text-2xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-wider);
+  text-transform: uppercase;
+  color: #1a4080;
+}
+
+.analyzer-data-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-wider);
+  color: var(--c-electric-cyan);
+  line-height: 1;
+  /* Cult UI: animated-number para actualización suave */
+}
+
+.analyzer-data-unit {
+  font-family: var(--font-condensed);
+  font-size: var(--text-2xs);
+  color: #1a5090;
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+}
+
+/* Celdas específicas */
+.analyzer-data-cell.key   .analyzer-data-value { color: var(--c-amber); }
+.analyzer-data-cell.bpm   .analyzer-data-value { color: var(--c-electric-cyan); }
+.analyzer-data-cell.tempo .analyzer-data-value { color: var(--c-violet-bright); }
+
+/* ── Espectrograma de frecuencias ────────────────────────────────────── */
+
+.analyzer-spectrum {
+  background: #020508;
+  border: 1px solid #0a1828;
+  border-radius: var(--r-sm);
+  height: 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.analyzer-spectrum-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Eje de frecuencias — labels debajo del espectrograma */
+.analyzer-spectrum-labels {
+  position: absolute;
+  bottom: var(--s-1);
+  left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 var(--s-2);
+  pointer-events: none;
+}
+.analyzer-spectrum-label {
+  font-family: var(--font-mono);
+  font-size: 7px;
+  color: rgba(0, 204, 224, 0.25);
+  letter-spacing: 0.04em;
+}
+
+/* ── Sugerencias de análisis ────────────────────────────────────────── */
+
+.analyzer-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.analyzer-suggestion-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  background: var(--c-elevated);
+  border: 1px solid var(--c-border-subtle);
+  border-radius: var(--r-md);
+  transition: border-color var(--dur-fast);
+}
+.analyzer-suggestion-item:hover {
+  border-color: var(--c-electric-cyan);
+}
+
+.analyzer-suggestion-icon {
+  color: var(--c-electric-cyan);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.analyzer-suggestion-text {
+  font-size: var(--text-sm);
+  color: var(--c-text-secondary);
+  line-height: var(--lh-normal);
+}
+.analyzer-suggestion-text strong {
+  color: var(--c-text);
+  font-weight: var(--fw-semibold);
+}
+
+/* ── Estado de loading ───────────────────────────────────────────────── */
+
+.analyzer-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-4);
+  padding: var(--s-12);
+}
+
+.analyzer-loading-text {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--ls-wider);
+  color: var(--c-electric-cyan);
+  animation: analyzerLoadingBlink 1s step-end infinite;
+}
+
+@keyframes analyzerLoadingBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* Spinner de laboratorio */
+.analyzer-spinner {
+  width: 40px;
+  height: 40px;
+  border: 2px solid rgba(0, 204, 224, 0.15);
+  border-top-color: var(--c-electric-cyan);
+  border-radius: 50%;
+  animation: analyzerSpin 0.8s linear infinite;
+  box-shadow: 0 0 12px rgba(0, 204, 224, 0.2);
+}
+
+@keyframes analyzerSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .analyzer-results { grid-template-columns: repeat(2, 1fr); }
+  .analyzer-upload { padding: var(--s-8) var(--s-4); }
+  .analyzer-oscilloscope { height: 80px; }
+}

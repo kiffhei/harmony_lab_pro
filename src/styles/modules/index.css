@@ -1,0 +1,15 @@
+/**
+ * modules/index.css — Harmony Lab Pro · Sesión 3
+ * Importa los estilos de identidad visual de cada módulo.
+ * Cada archivo define las clases CSS del componente respectivo.
+ */
+
+@import './piano.css';
+@import './guitar.css';
+@import './sequencer.css';
+@import './harmony-map.css';
+@import './tuner.css';
+@import './song-analyzer.css';
+@import './key-explorer.css';
+@import './pattern-library.css';
+@import './progressions.css';

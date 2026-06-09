@@ -1,0 +1,310 @@
+/**
+ * guitar.css — Harmony Lab Pro · Sesión 3
+ * Identidad: Diapasón de madera oscura (rosewood), trastes metálicos dorados,
+ * cuerdas con tensión visual. Notas activas = puntos ámbar luminosos.
+ * Las 6 cuerdas y 12 trastes se presentan horizontalmente como el instrumento real.
+ */
+
+/* ── Contenedor del Guitar ───────────────────────────────────────────── */
+
+.guitar-module {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-5);
+  padding: var(--s-5) var(--s-4);
+  position: relative;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Cuerpo del instrumento ──────────────────────────────────────────── */
+
+.guitar-neck {
+  width: max(640px, 100%);
+  background: linear-gradient(180deg,
+    #3a1e0c 0%,
+    #2e1608 50%,
+    #3a1e0c 100%
+  );
+  border-radius: var(--r-md);
+  border: 1px solid #5a3018;
+  position: relative;
+  box-shadow: var(--shadow-xl),
+              inset 0 1px 0 rgba(255,220,160,0.06),
+              inset 0 -1px 0 rgba(0,0,0,0.3);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Veta de madera — decorativa */
+.guitar-neck::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 40px,
+    rgba(90, 50, 20, 0.12) 40px,
+    rgba(90, 50, 20, 0.12) 42px,
+    transparent 42px,
+    transparent 120px,
+    rgba(60, 30, 10, 0.08) 120px,
+    rgba(60, 30, 10, 0.08) 122px
+  );
+  pointer-events: none;
+}
+
+/* Ceja — nut */
+.guitar-nut {
+  position: absolute;
+  left: 0;
+  top: 0; bottom: 0;
+  width: 8px;
+  background: linear-gradient(180deg, #e8dcc0 0%, #c8b890 100%);
+  border-right: 2px solid #a09060;
+  z-index: 3;
+  box-shadow: 2px 0 4px rgba(0,0,0,0.4);
+}
+
+/* ── Cuerdas ─────────────────────────────────────────────────────────── */
+
+.guitar-strings {
+  display: flex;
+  flex-direction: column;
+  padding: var(--s-5) var(--s-4) var(--s-5) 18px; /* deja espacio para el nut */
+  gap: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.guitar-string-row {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  position: relative;
+}
+
+/* Línea de cuerda */
+.guitar-string-row::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Grosor por cuerda (E2=más gruesa, e4=más fina) */
+.guitar-string-row.string-0::before { height: 2.5px; background: linear-gradient(90deg, #b0a060, #d0c080, #b0a060); }
+.guitar-string-row.string-1::before { height: 2px;   background: linear-gradient(90deg, #b8a868, #d8c888, #b8a868); }
+.guitar-string-row.string-2::before { height: 1.8px; background: linear-gradient(90deg, #c0b070, #e0d090, #c0b070); }
+.guitar-string-row.string-3::before { height: 1.4px; background: linear-gradient(90deg, #c8b878, #e8d898, #c8b878); }
+.guitar-string-row.string-4::before { height: 1.1px; background: linear-gradient(90deg, #d0c080, #f0e0a0, #d0c080); }
+.guitar-string-row.string-5::before { height: 0.8px; background: linear-gradient(90deg, #d8c888, #f8e8a8, #d8c888); }
+
+/* ── Trastes ─────────────────────────────────────────────────────────── */
+
+.guitar-frets {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  position: absolute;
+  top: 0; left: 18px; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.guitar-fret-line {
+  border-right: 2px solid;
+  border-image: linear-gradient(
+    180deg,
+    rgba(200,160,80,0.2) 0%,
+    rgba(200,160,80,0.75) 25%,
+    rgba(220,180,100,0.85) 50%,
+    rgba(200,160,80,0.75) 75%,
+    rgba(200,160,80,0.2) 100%
+  ) 1;
+  box-shadow: 1px 0 3px rgba(0,0,0,0.4);
+}
+
+/* ── Notas / celdas interactivas ─────────────────────────────────────── */
+
+.guitar-fret-cells {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  flex: 1;
+  position: relative;
+  z-index: 2;
+}
+
+.guitar-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  cursor: pointer;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  transition: none;
+}
+
+/* Punto de nota — por defecto invisible */
+.guitar-cell-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-condensed);
+  font-size: var(--text-2xs);
+  font-weight: var(--fw-bold);
+  color: transparent;
+  transition:
+    background   var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow   var(--dur-fast) var(--ease-out),
+    transform    var(--dur-fast) var(--ease-spring),
+    color        var(--dur-fast);
+  letter-spacing: 0;
+  user-select: none;
+}
+
+/* Hover — feedback sutil */
+.guitar-cell:hover .guitar-cell-dot {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.1);
+}
+
+/* Press */
+.guitar-cell:active .guitar-cell-dot {
+  transform: scale(0.88);
+}
+
+/* Nota en escala activa — punto ámbar luminoso */
+.guitar-cell.scale-note .guitar-cell-dot {
+  background: rgba(245,158,11,0.18);
+  border-color: var(--c-amber-dim);
+  color: var(--c-amber);
+  box-shadow: 0 0 6px var(--c-amber-glow);
+}
+
+/* Root note — ámbar intenso */
+.guitar-cell.root-note .guitar-cell-dot {
+  background: rgba(245,158,11,0.35);
+  border-color: var(--c-amber);
+  color: var(--c-amber-bright);
+  box-shadow: var(--glow-amber);
+}
+
+/* Nota sonando (pressed) */
+.guitar-cell.playing .guitar-cell-dot {
+  background: var(--c-amber);
+  border-color: var(--c-amber-bright);
+  color: var(--c-bg);
+  box-shadow: var(--glow-amber);
+  transform: scale(1.1);
+}
+
+/* ── Marcadores de posición en el diapasón (dots) ───────────────────── */
+/* Posiciones estándar: trastes 3, 5, 7, 9, 12 (doble) */
+
+.guitar-position-markers {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  height: 12px;
+  padding: 0 0 0 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.guitar-pos-marker {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.guitar-pos-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(200, 160, 80, 0.25);
+}
+
+/* Traste 12 — doble punto */
+.guitar-pos-marker.double {
+  gap: 3px;
+}
+
+/* ── Labels de cuerdas ───────────────────────────────────────────────── */
+
+.guitar-string-label {
+  position: absolute;
+  left: -14px;
+  font-family: var(--font-condensed);
+  font-size: 8px;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0;
+  color: rgba(180, 140, 70, 0.45);
+  user-select: none;
+  line-height: 1;
+}
+
+/* ── Labels de trastes ───────────────────────────────────────────────── */
+
+.guitar-fret-labels {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  padding: var(--s-1) 0 0 18px;
+}
+.guitar-fret-label {
+  text-align: center;
+  font-family: var(--font-condensed);
+  font-size: 8px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0;
+  color: var(--c-dim);
+  user-select: none;
+}
+
+/* ── Info strip ──────────────────────────────────────────────────────── */
+
+.guitar-info {
+  display: flex;
+  align-items: center;
+  gap: var(--s-5);
+  padding: var(--s-3) var(--s-4);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border-subtle);
+  border-radius: var(--r-md);
+  width: 100%;
+}
+
+.guitar-info-chord {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--fw-extrabold);
+  letter-spacing: var(--ls-tight);
+  color: var(--c-amber);
+  line-height: 1;
+}
+
+.guitar-info-position {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: var(--ls-wider);
+  color: var(--c-muted);
+}
+.guitar-info-position .pos-value { color: var(--c-text-secondary); }
+
+/* Responsive */
+@media (max-width: 640px) {
+  .guitar-neck { width: max(480px, 100%); }
+  .guitar-string-row { height: 30px; }
+  .guitar-cell { height: 30px; }
+  .guitar-cell-dot { width: 14px; height: 14px; font-size: 7px; }
+}

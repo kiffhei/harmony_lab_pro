@@ -1,0 +1,375 @@
+/**
+ * sequencer.css — Harmony Lab Pro · Sesión 3
+ * Identidad: Drum machine física — botones con relieve, LEDs que pulsan,
+ * plástico industrial. Roland TR-808 meets Novation Circuit.
+ * Cult UI: canvas-fractal-grid para el background GridPulse.
+ *          texture-button inspira el relieve de los pasos activos.
+ */
+
+/* ── Contenedor del Sequencer ────────────────────────────────────────── */
+
+.sequencer-module {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  padding: var(--s-5) var(--s-4);
+  background: var(--c-bg);
+  position: relative;
+}
+
+/* Faceplate — chasis del drum machine */
+.sequencer-faceplate {
+  background: linear-gradient(180deg, #0d1020 0%, #0a0c18 100%);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  padding: var(--s-4);
+  box-shadow: var(--shadow-xl),
+              inset 0 1px 0 rgba(255,255,255,0.03);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Tornillos decorativos en las esquinas — efecto hardware físico */
+.sequencer-faceplate::before,
+.sequencer-faceplate::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #2a3350, #1a2038);
+  border: 1px solid #374151;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.8),
+              0 1px 0 rgba(255,255,255,0.03);
+}
+.sequencer-faceplate::before { top: 10px; left: 10px; }
+.sequencer-faceplate::after  { top: 10px; right: 10px; }
+
+/* ── Header del sequencer — BPM, play/stop, loop ─────────────────────── */
+
+.seq-header {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  margin-bottom: var(--s-4);
+  padding-bottom: var(--s-3);
+  border-bottom: 1px solid var(--c-border-subtle);
+}
+
+.seq-brand {
+  font-family: var(--font-condensed);
+  font-size: var(--text-2xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-widest);
+  text-transform: uppercase;
+  color: rgba(245, 158, 11, 0.4);
+}
+
+.seq-bpm-display {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+
+.seq-bpm-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xl);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-wider);
+  color: var(--c-amber);
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.seq-bpm-value:hover { color: var(--c-amber-bright); }
+
+.seq-bpm-label {
+  font-family: var(--font-condensed);
+  font-size: var(--text-2xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+/* Botón play/stop — LED integrado */
+.seq-play-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, #1a2038 0%, #0f1428 100%);
+  border: 1px solid var(--c-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  box-shadow: var(--shadow-md),
+              inset 0 1px 0 rgba(255,255,255,0.04);
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    box-shadow  var(--dur-fast) var(--ease-out),
+    transform   var(--dur-fast) var(--ease-spring);
+  margin-left: auto;
+}
+.seq-play-btn:hover {
+  background: linear-gradient(135deg, #1e2640 0%, #141828 100%);
+  box-shadow: var(--shadow-md), 0 0 12px var(--c-amber-glow);
+}
+.seq-play-btn:active {
+  transform: scale(0.94);
+  box-shadow: var(--shadow-sm),
+              inset 0 2px 6px rgba(0,0,0,0.5);
+}
+.seq-play-btn.playing {
+  background: linear-gradient(135deg,
+    rgba(245,158,11,0.18) 0%,
+    rgba(245,158,11,0.08) 100%
+  );
+  border-color: var(--c-amber-dim);
+  box-shadow: var(--shadow-md), var(--glow-amber);
+}
+
+/* LED de estado en el botón */
+.seq-play-led {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--c-dim);
+  transition: background var(--dur-fast), box-shadow var(--dur-fast);
+}
+.seq-play-btn.playing .seq-play-led {
+  background: var(--c-green);
+  box-shadow: 0 0 5px rgba(16, 185, 129, 0.8);
+  animation: ledBlink var(--dur-beat, 500ms) ease-in-out infinite;
+}
+
+@keyframes ledBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* ── Grid de pasos ───────────────────────────────────────────────────── */
+
+.seq-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+/* Fila de instrumento */
+.seq-track {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+/* Label del instrumento */
+.seq-track-label {
+  font-family: var(--font-condensed);
+  font-size: var(--text-2xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-dim);
+  width: 38px;
+  text-align: right;
+  flex-shrink: 0;
+  user-select: none;
+  transition: color var(--dur-fast);
+}
+.seq-track:hover .seq-track-label { color: var(--c-muted); }
+
+/* Fila de celdas */
+.seq-steps {
+  display: flex;
+  gap: var(--seq-gap);
+  flex: 1;
+}
+
+/* Separador visual cada 4 pasos — grupos de compás */
+.seq-steps .seq-step:nth-child(4n+1) {
+  margin-left: var(--s-1);
+}
+.seq-steps .seq-step:first-child {
+  margin-left: 0;
+}
+
+/* Paso individual */
+.seq-step {
+  flex: 1;
+  height: var(--seq-step-h-desktop);
+  background: var(--c-elevated);
+  border: 1px solid var(--c-border-subtle);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  position: relative;
+  transition:
+    background   var(--dur-instant) var(--ease-out),
+    border-color var(--dur-instant) var(--ease-out),
+    box-shadow   var(--dur-instant) var(--ease-out),
+    transform    var(--dur-instant) var(--ease-spring);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+}
+
+/* Marcador downbeat — cada 4 pasos */
+.seq-step:nth-child(4n+1) {
+  background: rgba(245, 158, 11, 0.04);
+  border-color: rgba(245, 158, 11, 0.1);
+}
+
+/* Hover */
+.seq-step:hover {
+  background: var(--c-elevated-2);
+  border-color: var(--c-muted);
+}
+/* Press */
+.seq-step:active {
+  transform: scale(0.85);
+}
+
+/* ── Pasos activos por instrumento ───────────────────────────────────── */
+
+/* LED encendido — punto de luz en el centro del paso */
+.seq-step.on::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: calc(var(--r-sm) - 2px);
+  background: inherit;
+  filter: brightness(1.2);
+  pointer-events: none;
+}
+
+.seq-step.on-kick {
+  background: var(--c-burn-orange);
+  border-color: transparent;
+  box-shadow: var(--glow-kick);
+}
+.seq-step.on-snare {
+  background: var(--c-amber);
+  border-color: transparent;
+  box-shadow: var(--glow-snare);
+}
+.seq-step.on-hh-c {
+  background: var(--c-signal-yellow);
+  border-color: transparent;
+  box-shadow: var(--glow-hh);
+}
+.seq-step.on-hh-o {
+  background: var(--c-signal-yellow);
+  border-color: transparent;
+  box-shadow: var(--glow-hh);
+  opacity: 0.7;
+}
+.seq-step.on-clap {
+  background: var(--c-violet);
+  border-color: transparent;
+  box-shadow: var(--glow-clap);
+}
+.seq-step.on-tom {
+  background: var(--c-green);
+  border-color: transparent;
+  box-shadow: var(--glow-tom);
+}
+.seq-step.on-shaker {
+  background: var(--c-electric-cyan);
+  border-color: transparent;
+  box-shadow: 0 0 6px rgba(0,204,224,0.5), 0 0 14px rgba(0,204,224,0.2);
+}
+
+/* Animación de encendido — spring via Framer Motion en el componente:
+   initial: { scale:0.8, opacity:0.5 }
+   animate: { scale:1,   opacity:1   }
+   transition: { type:"spring", stiffness:600, damping:30 } */
+
+/* ── Playhead — posición actual durante reproducción ─────────────────── */
+
+.seq-step.playhead {
+  box-shadow: inset 0 0 0 2px rgba(245, 158, 11, 0.8),
+              inset 0 0 8px rgba(245, 158, 11, 0.15);
+}
+/* Playhead sobre paso activo — combina colores */
+.seq-step.on-kick.playhead   { box-shadow: var(--glow-kick),  inset 0 0 0 2px rgba(255,255,255,0.25); }
+.seq-step.on-snare.playhead  { box-shadow: var(--glow-snare), inset 0 0 0 2px rgba(255,255,255,0.25); }
+.seq-step.on-hh-c.playhead   { box-shadow: var(--glow-hh),   inset 0 0 0 2px rgba(255,255,255,0.25); }
+.seq-step.on-clap.playhead   { box-shadow: var(--glow-clap), inset 0 0 0 2px rgba(255,255,255,0.25); }
+
+/* ── Mute button por instrumento ─────────────────────────────────────── */
+
+.seq-track-mute {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--r-xs);
+  background: var(--c-elevated);
+  border: 1px solid var(--c-border-subtle);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--dur-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.seq-track-mute:hover { border-color: var(--c-muted); }
+.seq-track-mute.muted {
+  background: rgba(239,68,68,0.12);
+  border-color: rgba(239,68,68,0.3);
+}
+
+/* ── Footer — loop indicator, swing, clear ───────────────────────────── */
+
+.seq-footer {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  margin-top: var(--s-3);
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--c-border-subtle);
+}
+
+.seq-step-counter {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-wider);
+  color: var(--c-amber);
+  min-width: 32px;
+}
+
+.seq-step-counter.paused {
+  color: var(--c-muted);
+}
+
+/* ── Background GridPulse (Cult UI: canvas-fractal-grid) ─────────────── */
+/* El componente React <GridPulse> se posiciona como bg-animated.
+   CSS de control de opacidad y sincronización con BPM:
+   La opacidad pulsa entre --bg-default-opacity y --bg-active-opacity
+   al ritmo del BPM cuando isPlaying=true.                            */
+
+.seq-bg-pulse {
+  /* Clase aplicada al wrapper del bg-animated cuando isPlaying=true */
+  animation: seqGridPulse var(--dur-beat, 500ms) ease-in-out infinite;
+}
+
+@keyframes seqGridPulse {
+  0%, 100% { opacity: var(--bg-default-opacity); }
+  50%       { opacity: var(--bg-active-opacity); }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .seq-step { height: var(--seq-step-h-tablet); }
+  .seq-track-label { width: 28px; font-size: 8px; }
+}
+@media (max-width: 640px) {
+  .seq-step { height: var(--seq-step-h-mobile); border-radius: var(--r-xs); }
+  .seq-track-label { display: none; }
+  .seq-track-mute  { display: none; }
+  .seq-bpm-value { font-size: var(--text-xl); }
+}

@@ -1,0 +1,336 @@
+/**
+ * harmony-map.css — Harmony Lab Pro · Sesión 3
+ * Identidad: Constelación / circuito impreso orgánico.
+ * Nodos de acordes conectados con luz, sobre fondo estelar profundo.
+ * Background: TonalityGradient reactivo a rootNote (Cult UI: bg-animated-gradient).
+ */
+
+/* ── Contenedor del Harmony Map ──────────────────────────────────────── */
+
+.harmony-module {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  padding: var(--s-5) var(--s-4);
+  position: relative;
+  min-height: 400px;
+}
+
+/* Canvas SVG — espacio del mapa de acordes */
+.harmony-canvas {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 320px;
+}
+
+/* SVG de aristas — debe estar detrás de los nodos */
+.harmony-edges-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* ── Aristas / relaciones armónicas ─────────────────────────────────── */
+
+.harmony-edge {
+  stroke: var(--c-border);
+  stroke-width: 1;
+  opacity: var(--chord-edge-opacity);
+  fill: none;
+  transition:
+    stroke   var(--dur-normal) var(--ease-out),
+    opacity  var(--dur-normal) var(--ease-out),
+    stroke-width var(--dur-normal) var(--ease-out);
+}
+
+/* Arista iluminada — relación entre acorde activo y sus vecinos */
+.harmony-edge.lit {
+  stroke: var(--c-amber-dim);
+  opacity: 0.65;
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 3px rgba(245,158,11,0.3));
+}
+
+/* Arista de dominante — V→I más prominente */
+.harmony-edge.dominant {
+  stroke: var(--c-amber);
+  opacity: 0.5;
+  stroke-width: 1.5;
+  stroke-dasharray: none;
+}
+
+/* Arista de subdominante — IV */
+.harmony-edge.subdominant {
+  stroke: var(--c-violet-dim);
+  opacity: 0.4;
+}
+
+/* ── Nodos de acorde ─────────────────────────────────────────────────── */
+
+.chord-node-wrapper {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  /* Framer Motion gestiona el layout.
+     drag={true} dragConstraints={canvasRef}
+     whileHover={{ scale: 1.08 }}
+     whileTap={{ scale: 0.92 }}
+     transition: { type:"spring", stiffness:400, damping:25 } */
+}
+
+.chord-node {
+  width: var(--chord-node-size);
+  height: var(--chord-node-size);
+  border-radius: 50%;
+  background: var(--c-elevated);
+  border: 1px solid var(--c-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  transition:
+    background   var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow   var(--dur-fast) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Halo de contexto — aura sutil siempre visible */
+.chord-node::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,158,11,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-normal) var(--ease-out);
+}
+
+.chord-node:hover::before { opacity: 1; }
+
+/* Hover */
+.chord-node:hover {
+  background: var(--c-elevated-2);
+  border-color: var(--c-amber-dim);
+  box-shadow: var(--shadow-chord-hover);
+}
+
+/* Activo — sonando ahora */
+.chord-node.active {
+  background: var(--c-elevated-2);
+  border-color: var(--c-amber);
+  box-shadow: var(--shadow-chord-active);
+}
+.chord-node.active::before { opacity: 1; }
+
+/* Selected — en la progresión del usuario */
+.chord-node.selected {
+  background: var(--c-amber-glow);
+  border-color: var(--c-amber-bright);
+  box-shadow: 0 0 0 3px var(--c-amber-glow-strong), var(--shadow-md);
+}
+
+/* Tónica / I — siempre destacada */
+.chord-node.tonic {
+  border-width: 2px;
+  border-color: var(--c-amber-dim);
+}
+
+/* Punto LED externo — pulsa cuando suena */
+.chord-node-led {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-dim);
+  border: 1px solid var(--c-border-subtle);
+  transition: background var(--dur-fast), box-shadow var(--dur-fast);
+}
+.chord-node.active .chord-node-led {
+  background: var(--c-amber);
+  box-shadow: 0 0 6px var(--c-amber), 0 0 12px rgba(245,158,11,0.4);
+}
+
+/* Contenido del nodo */
+.chord-node-roman {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-secondary);
+  line-height: 1;
+  letter-spacing: var(--ls-normal);
+  transition: color var(--dur-fast);
+}
+.chord-node.active   .chord-node-roman,
+.chord-node.selected .chord-node-roman { color: var(--c-amber); }
+.chord-node.tonic    .chord-node-roman { color: var(--c-amber-bright); }
+
+.chord-node-name {
+  font-family: var(--font-condensed);
+  font-size: var(--text-2xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-wide);
+  color: var(--c-muted);
+  line-height: 1;
+  transition: color var(--dur-fast);
+}
+.chord-node.active   .chord-node-name,
+.chord-node.selected .chord-node-name { color: var(--c-text-secondary); }
+
+.chord-node-quality {
+  font-family: var(--font-condensed);
+  font-size: 8px;
+  font-weight: var(--fw-regular);
+  color: var(--c-dim);
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+.chord-node.active .chord-node-quality { color: var(--c-amber-dim); }
+
+/* ── Panel de info del acorde activo ─────────────────────────────────── */
+
+.harmony-chord-info {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border-subtle);
+  border-radius: var(--r-lg);
+  padding: var(--s-4) var(--s-5);
+  display: flex;
+  align-items: center;
+  gap: var(--s-6);
+  flex-shrink: 0;
+}
+
+.harmony-chord-name-display {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: var(--fw-extrabold);
+  letter-spacing: var(--ls-tight);
+  line-height: 1;
+  color: var(--c-amber);
+  min-width: 90px;
+}
+
+.harmony-chord-notes {
+  display: flex;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+}
+
+.harmony-note-pill {
+  font-family: var(--font-condensed);
+  font-size: var(--text-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-wide);
+  padding: 3px var(--s-2);
+  border-radius: var(--r-full);
+  background: var(--c-elevated);
+  border: 1px solid var(--c-border);
+  color: var(--c-text-secondary);
+  transition: all var(--dur-fast);
+}
+.harmony-note-pill.active {
+  background: var(--c-amber-glow);
+  border-color: rgba(245,158,11,0.4);
+  color: var(--c-amber);
+}
+
+.harmony-chord-function {
+  font-family: var(--font-condensed);
+  font-size: var(--text-xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+/* ── Barra de progresión ─────────────────────────────────────────────── */
+
+.harmony-progression-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border-subtle);
+  border-radius: var(--r-md);
+  overflow-x: auto;
+  min-height: 52px;
+}
+
+.harmony-prog-empty {
+  font-family: var(--font-condensed);
+  font-size: var(--text-xs);
+  color: var(--c-dim);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  font-style: italic;
+}
+
+.harmony-prog-chord {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-sm);
+  background: var(--c-elevated);
+  border: 1px solid var(--c-border);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--dur-fast);
+}
+.harmony-prog-chord:hover {
+  border-color: var(--c-amber-dim);
+  background: var(--c-elevated-2);
+}
+.harmony-prog-chord.current {
+  border-color: var(--c-amber);
+  background: var(--c-amber-glow);
+}
+.harmony-prog-chord-name {
+  font-family: var(--font-condensed);
+  font-size: var(--text-xs);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-secondary);
+}
+.harmony-prog-chord.current .harmony-prog-chord-name {
+  color: var(--c-amber);
+}
+
+/* ── Background TonalityGradient (Cult UI: bg-animated-gradient) ─────── */
+/* Gradiente radial reactivo a --active-key-color.
+   Transición 600ms al cambiar rootNote.
+   z-index: var(--z-bg), pointer-events: none, opacity: ≤0.15          */
+.harmony-tonality-bg {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-bg);
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 40%,
+    var(--active-key-color) 0%,
+    transparent 65%
+  );
+  opacity: var(--bg-default-opacity);
+  transition: opacity var(--dur-slower) var(--ease-out),
+              background var(--dur-slower) var(--ease-out);
+}
+.harmony-tonality-bg.active { opacity: var(--bg-active-opacity); }
+
+/* Responsive */
+@media (max-width: 640px) {
+  .chord-node { width: var(--chord-node-sm); height: var(--chord-node-sm); }
+  .chord-node-name { display: none; }
+  .harmony-chord-name-display { font-size: var(--text-2xl); }
+  .harmony-chord-info { gap: var(--s-3); padding: var(--s-3); }
+}

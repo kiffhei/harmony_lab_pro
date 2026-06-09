@@ -1,0 +1,185 @@
+/**
+ * progressions.css — Harmony Lab Pro · Sesión 3
+ * Identidad: Editor visual de progresiones — slots de acorde como cartas
+ * en una mesa de mezclas. Arrastrable, reproducible, exportable a MIDI.
+ * Parte del Tab Armonía junto con HarmonyMap y KeyExplorer.
+ */
+
+/* ── Contenedor ──────────────────────────────────────────────────────── */
+
+.progressions-module {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  padding: var(--s-5) var(--s-4);
+}
+
+/* ── Barra de controles ──────────────────────────────────────────────── */
+
+.prog-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+
+.prog-tempo-display {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  margin-left: auto;
+}
+
+.prog-tempo-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-wider);
+  color: var(--c-amber);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.prog-tempo-label {
+  font-family: var(--font-condensed);
+  font-size: var(--text-2xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+/* ── Slots de la progresión ──────────────────────────────────────────── */
+
+.prog-slots {
+  display: flex;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  min-height: 110px;
+  padding: var(--s-3);
+  background: var(--c-elevated);
+  border: 1px solid var(--c-border-subtle);
+  border-radius: var(--r-lg);
+  align-items: flex-start;
+}
+
+/* Slot vacío — placeholder drag-and-drop */
+.prog-slot-empty {
+  width: 80px;
+  height: 88px;
+  border: 2px dashed var(--c-border);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--c-dim);
+  font-size: var(--text-xl);
+  transition: border-color var(--dur-fast), color var(--dur-fast);
+  flex-shrink: 0;
+}
+.prog-slot-empty:hover {
+  border-color: var(--c-amber-dim);
+  color: var(--c-muted);
+}
+
+/* Tarjeta de acorde en la progresión */
+.prog-chord-card {
+  width: 80px;
+  min-height: 88px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  padding: var(--s-3) var(--s-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-1);
+  cursor: grab;
+  position: relative;
+  flex-shrink: 0;
+  transition:
+    border-color var(--dur-fast),
+    box-shadow   var(--dur-fast),
+    transform    var(--dur-fast) var(--ease-spring);
+  user-select: none;
+}
+.prog-chord-card:hover {
+  border-color: var(--c-amber-dim);
+  box-shadow: var(--shadow-md);
+}
+.prog-chord-card.playing {
+  border-color: var(--c-amber);
+  background: var(--c-amber-glow);
+  box-shadow: var(--shadow-chord-active);
+}
+.prog-chord-card:active { cursor: grabbing; }
+
+.prog-chord-roman {
+  font-family: var(--font-condensed);
+  font-size: var(--text-2xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+.prog-chord-card.playing .prog-chord-roman { color: var(--c-amber); }
+
+.prog-chord-name {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-tight);
+  color: var(--c-text);
+  line-height: 1;
+  text-align: center;
+}
+.prog-chord-card.playing .prog-chord-name { color: var(--c-amber-bright); }
+
+/* Botón de eliminar — aparece en hover */
+.prog-chord-delete {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(239,68,68,0.15);
+  border: 1px solid rgba(239,68,68,0.25);
+  color: var(--c-red);
+  font-size: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--dur-fast);
+  z-index: 1;
+}
+.prog-chord-card:hover .prog-chord-delete { opacity: 1; }
+.prog-chord-delete:hover {
+  background: rgba(239,68,68,0.28);
+  border-color: var(--c-red);
+}
+
+/* ── Indicador de posición durante playback ──────────────────────────── */
+
+.prog-playhead-indicator {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-amber);
+  box-shadow: var(--glow-amber);
+  pointer-events: none;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .prog-chord-card { width: 68px; min-height: 76px; }
+  .prog-slot-empty { width: 68px; height: 76px; }
+}
