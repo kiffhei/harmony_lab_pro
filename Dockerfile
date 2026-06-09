@@ -9,6 +9,7 @@ RUN npm ci
 
 # Copiar fuente y construir
 COPY . .
+ARG CACHEBUST=1
 RUN npm run build
 
 # ── Stage 2: Production ──────────────────────────────────────────────────────

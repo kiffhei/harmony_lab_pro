@@ -65,6 +65,7 @@ jobs:
         run: |
           curl -v -X POST "${{ secrets.EASYPANEL_WEBHOOK_URL }}" \
             -H "Content-Type: application/json" \
+            -d '{"ref":"main","force":true}' \
             --max-time 30 \
             --retry 3 \
           && echo "✓ Deploy triggered" \
