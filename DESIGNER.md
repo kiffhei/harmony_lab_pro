@@ -425,8 +425,80 @@ Actualizar desde JS: `document.documentElement.style.setProperty('--active-key-c
 
 ---
 
-### Animaciones de navegación principal
-<!-- Completar después de la sesión 2 -->
+### Sesión 2 — 2026-06-08
+
+---
+
+#### Componentes base — dirección **B: Rounded / Soft Glow**
+
+Bordes redondeados (r=8px para cards/buttons/inputs, r=full para badges),
+glow suave en estados activos. Más cercano a hardware Novation moderno que
+al TE puro, pero sin caer en SaaS genérico. Contraste limpio sobre oscuro.
+
+Implementado en `src/styles/globals.css`:
+- Button: primary / secondary / ghost / destructive / icon + tamaños sm/lg
+- Card: base / interactive / selected / pattern
+- Input / Select / Textarea + field label
+- Slider con fill via CSS custom property `--slider-value`
+- Badge / Tag / Pill — variantes semánticas + badge-key para tonalidad activa
+- Tab indicator: sidebar vertical, indicador borde izquierdo ámbar con glow
+- Sequencer step: off / on-{instrumento} / playhead / beat-4-marker
+- Chord node: default / hover / active / selected + edge SVG
+- Piano key: white / black / scale-note / root-note / pressed
+- Tuner display: note-name / cents / freq con estados intune/flat/sharp
+- Splash screen: gradientes animados + CTA con pulse de espera
+- Layout base: app-layout / sidebar-nav / app-main / app-topbar / app-content
+
+---
+
+#### Splash screen — dirección **A: Expresionista**
+
+Tres gradientes radiales independientes animados (warm/cool/accent) que
+respiran a ritmos distintos (6s, 8s, 10s). Logo H·WAVE centrado, título
+en Syne 800 72px, CTA `.btn .btn-primary .btn-lg` con pulse de espera.
+
+Entrada Framer Motion:
+```
+título:   initial:{opacity:0,y:20} → animate:{opacity:1,y:0}  delay:0.2s  dur:0.7s
+subtítulo: delay:0.35s
+CTA:      delay:0.5s → luego ctaWaitPulse animation hasta primer clic
+```
+
+Salida (primer clic activa AudioContext + dismiss):
+```
+exit: { opacity:0, scale:1.04 }  transition:{ duration:0.5, ease:[0.4,0,1,1] }
+```
+
+---
+
+#### Navegación principal — **A: Sidebar Vertical**
+
+Panel 64px, fijo a la izquierda. Iconos SVG 18px + label Barlow Condensed
+9px en caps. Indicador activo: `::before` con borde izquierdo 3px ámbar +
+glow, animado con Framer Motion `layoutId="sidebar-indicator"`.
+
+En mobile (≤768px): el sidebar se convierte en bottom bar horizontal con
+el mismo sistema de indicador pero horizontal (top 2px).
+
+---
+
+#### Micro-interacciones — valores definitivos
+
+| Interacción | Implementación | Valores |
+|---|---|---|
+| ChordNode click | Framer Motion whileTap | `scale:0.92`, spring `stiffness:400 damping:25`, rebote a 1.04 |
+| Piano key press | CSS transform + shadow | `translateY(2px)` 80ms linear, `--shadow-key-press` |
+| Sequencer step on | Framer Motion animate | `scale:0.85→1, opacity:0.6→1`, spring `stiffness:600 damping:30` |
+| Tuner in-tune | CSS animation | `tunerIntunePulse` 400ms × 3 iteraciones, luego stop |
+| Pattern card hover | Framer Motion whileHover | `y:-4`, tween 200ms `ease:[0.23,1,0.32,1]` |
+| Button primary | CSS + Framer Motion | hover: `brightness(1.12)`, tap: `scale:0.96` spring `stiffness:600` |
+| Tab switch | Framer Motion layoutId | `layoutId="sidebar-indicator"`, spring `stiffness:500 damping:35` |
+| Splash CTA waiting | CSS keyframes | `ctaWaitPulse` 2s ease-in-out infinite hasta primer clic |
+| TonalityGradient change | CSS transition | `--active-key-color` transition 600ms ease (`--dur-slower`) |
+
+---
+
+#### Animaciones de navegación principal
 
 ---
 
