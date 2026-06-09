@@ -71,7 +71,7 @@ export default function Splash({ onNavigate }) {
             letterSpacing:        'var(--ls-tight)',
             lineHeight:           1.1,
           }}>
-            H·WAVE
+            H·LAB
           </h1>
           <p className="font-[family-name:var(--font-body)] text-[var(--c-text-secondary)] text-base tracking-[var(--ls-widest)] uppercase mt-2">
             Harmony Lab Pro

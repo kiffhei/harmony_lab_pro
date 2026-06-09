@@ -68,7 +68,7 @@ export default function DesktopLayout() {
         {/* Logo mark */}
         <div className="flex items-center justify-center w-10 h-10 mb-2">
           <span className="font-[family-name:var(--font-display)] font-bold text-[var(--c-amber)] text-[length:var(--text-sm)] tracking-[var(--ls-tight)]">
-            H·W
+            H·L
           </span>
         </div>
 
