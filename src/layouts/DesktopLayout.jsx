@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Splash from '../components/Splash/Splash.jsx';
 
 const TABS = [
   { label: 'Armonía',      icon: '♩',  modules: ['Harmony Map', 'Key Explorer', 'Progressions'] },
@@ -8,14 +9,12 @@ const TABS = [
 ];
 
 /**
- * ModulePlaceholder — centered content with TonalityGradient radial backdrop.
- * The gradient reacts to --active-key-color, which MusicContext updates on root note change.
+ * ModulePlaceholder — centered name + TonalityGradient radial backdrop.
  * @param {{ name: string }} props
  */
 function ModulePlaceholder({ name }) {
   return (
     <div className="flex-1 relative flex items-center justify-center">
-      {/* TonalityGradient bg — dynamic, inline style justified by var(--active-key-color) */}
       <div
         className="absolute inset-0 pointer-events-none z-0 opacity-[0.08]"
         style={{
@@ -36,21 +35,34 @@ function ModulePlaceholder({ name }) {
 
 /**
  * DesktopLayout — 3-column shell: sidebar (64px) + panel (260px) + main (flex-1).
- * Manages tab and module selection only; no module content yet.
+ * showSplash = true renders the home screen; false renders the active module placeholder.
  */
 export default function DesktopLayout() {
+  const [showSplash,   setShowSplash]   = useState(true);
   const [activeTab,    setActiveTab]    = useState(0);
   const [activeModule, setActiveModule] = useState('Harmony Map');
 
   function handleTabChange(idx) {
     setActiveTab(idx);
     setActiveModule(TABS[idx].modules[0]);
+    setShowSplash(false);
+  }
+
+  function handleModuleClick(mod) {
+    setActiveModule(mod);
+    setShowSplash(false);
+  }
+
+  function handleNavigate(tabIdx, moduleName) {
+    setActiveTab(tabIdx);
+    setActiveModule(moduleName);
+    setShowSplash(false);
   }
 
   return (
     <div className="app-layout">
 
-      {/* ── Sidebar — 64px ─────────────────────────────────────────────────── */}
+      {/* ── Sidebar — 64px ───────────────────────────────────────────────── */}
       <nav className="sidebar-nav">
 
         {/* Logo mark */}
@@ -60,13 +72,22 @@ export default function DesktopLayout() {
           </span>
         </div>
 
-        {/* Tab icons */}
+        {/* Inicio button */}
+        <button
+          title="Inicio"
+          onClick={() => setShowSplash(true)}
+          className={`sidebar-nav-item${showSplash ? ' active' : ''}`}
+        >
+          <span className="text-base leading-none" aria-hidden="true">⌂</span>
+        </button>
+
+        {/* Tab icons — active only when not on splash */}
         {TABS.map((tab, idx) => (
           <button
             key={tab.label}
             title={tab.label}
             onClick={() => handleTabChange(idx)}
-            className={`sidebar-nav-item${activeTab === idx ? ' active' : ''}`}
+            className={`sidebar-nav-item${!showSplash && activeTab === idx ? ' active' : ''}`}
           >
             <span className="text-base leading-none" aria-hidden="true">{tab.icon}</span>
           </button>
@@ -74,44 +95,49 @@ export default function DesktopLayout() {
 
       </nav>
 
-      {/* ── Center panel — 260px sub-navigation ────────────────────────────── */}
+      {/* ── Center panel — 260px sub-navigation ──────────────────────────── */}
       <div className="w-[var(--panel-w)] shrink-0 bg-[var(--c-elevated)] border-r border-[var(--c-border)] overflow-y-auto flex flex-col">
 
-        {/* Panel header — active tab label */}
+        {/* Panel header */}
         <div className="px-4 py-3 border-b border-[var(--c-border-subtle)] shrink-0">
           <p className="font-[family-name:var(--font-condensed)] font-semibold text-[length:var(--text-xs)] tracking-[var(--ls-wide)] uppercase text-[var(--c-text-secondary)]">
-            {TABS[activeTab].label}
+            {showSplash ? 'Módulos' : TABS[activeTab].label}
           </p>
         </div>
 
-        {/* Module list */}
-        <div className="flex flex-col py-2">
-          {TABS[activeTab].modules.map((mod) => {
-            const isActive = activeModule === mod;
-            return (
-              <button
-                key={mod}
-                onClick={() => setActiveModule(mod)}
-                className={[
-                  'block w-full text-left py-3 px-4 border-l-2 transition-colors duration-150 outline-none',
-                  'font-[family-name:var(--font-body)] text-[length:var(--text-sm)]',
-                  isActive
-                    ? 'bg-[var(--c-elevated-2)] text-[var(--c-amber)] border-[var(--c-amber)]'
-                    : 'text-[var(--c-text-secondary)] border-transparent hover:bg-[var(--c-elevated-2)]',
-                ].join(' ')}
-              >
-                {mod}
-              </button>
-            );
-          })}
-        </div>
+        {/* Module list — hidden on splash */}
+        {!showSplash && (
+          <div className="flex flex-col py-2">
+            {TABS[activeTab].modules.map((mod) => {
+              const isActive = activeModule === mod;
+              return (
+                <button
+                  key={mod}
+                  onClick={() => handleModuleClick(mod)}
+                  className={[
+                    'block w-full text-left py-3 px-4 border-l-2 transition-colors duration-150 outline-none',
+                    'font-[family-name:var(--font-body)] text-[length:var(--text-sm)]',
+                    isActive
+                      ? 'bg-[var(--c-elevated-2)] text-[var(--c-amber)] border-[var(--c-amber)]'
+                      : 'text-[var(--c-text-secondary)] border-transparent hover:bg-[var(--c-elevated-2)]',
+                  ].join(' ')}
+                >
+                  {mod}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
       </div>
 
-      {/* ── Main area — flex-1 ──────────────────────────────────────────────── */}
+      {/* ── Main area — flex-1 ───────────────────────────────────────────── */}
       <main className="app-main bg-[var(--c-bg)]">
         <div className="app-content flex flex-col">
-          <ModulePlaceholder name={activeModule} />
+          {showSplash
+            ? <Splash onNavigate={handleNavigate} />
+            : <ModulePlaceholder name={activeModule} />
+          }
         </div>
       </main>
 
