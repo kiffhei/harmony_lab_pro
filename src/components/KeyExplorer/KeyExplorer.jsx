@@ -191,27 +191,47 @@ export default function KeyExplorer() {
 
       {/* ── Sección 1 — Selectores ─────────────────────────────────────── */}
       <div className="key-explorer-selectors">
-        <select
-          className="select"
-          value={rootNote}
-          aria-label="Root note"
-          onChange={(e) => setRootNote(e.target.value)}
-        >
-          {NOTES.map((note) => (
-            <option key={note} value={note}>{note}</option>
-          ))}
-        </select>
+        <div className="flex flex-col gap-[var(--s-1)] flex-1 min-w-0">
+          <label
+            htmlFor="ke-root"
+            className="font-[family-name:var(--font-condensed)] text-[length:var(--text-2xs)] font-semibold tracking-[var(--ls-wide)] uppercase text-[var(--c-text-secondary)]"
+          >
+            ROOT NOTE
+          </label>
+          <select
+            id="ke-root"
+            name="ke-root"
+            className="select w-full"
+            value={rootNote}
+            aria-label="Root note"
+            onChange={(e) => setRootNote(e.target.value)}
+          >
+            {NOTES.map((note) => (
+              <option key={note} value={note}>{note}</option>
+            ))}
+          </select>
+        </div>
 
-        <select
-          className="select"
-          value={scaleName}
-          aria-label="Scale name"
-          onChange={(e) => setScaleName(e.target.value)}
-        >
-          {scaleNames.map((name) => (
-            <option key={name} value={name}>{name}</option>
-          ))}
-        </select>
+        <div className="flex flex-col gap-[var(--s-1)] flex-1 min-w-0">
+          <label
+            htmlFor="ke-scale"
+            className="font-[family-name:var(--font-condensed)] text-[length:var(--text-2xs)] font-semibold tracking-[var(--ls-wide)] uppercase text-[var(--c-text-secondary)]"
+          >
+            SCALE
+          </label>
+          <select
+            id="ke-scale"
+            name="ke-scale"
+            className="select w-full"
+            value={scaleName}
+            aria-label="Scale"
+            onChange={(e) => setScaleName(e.target.value)}
+          >
+            {scaleNames.map((name) => (
+              <option key={name} value={name}>{name}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* ── Sección 1B — MoodBanner ────────────────────────────────────── */}

@@ -16,13 +16,13 @@ describe('KeyExplorer', () => {
     const { container } = renderWithProvider(<KeyExplorer />);
     expect(container.querySelector('.key-explorer-module')).toBeInTheDocument();
     expect(screen.getByLabelText('Root note')).toBeInTheDocument();
-    expect(screen.getByLabelText('Scale name')).toBeInTheDocument();
+    expect(screen.getByLabelText('Scale')).toBeInTheDocument();
   });
 
   it('los dos selects existen con valores correctos: C y Major', () => {
     renderWithProvider(<KeyExplorer />);
     const rootSelect  = screen.getByLabelText('Root note');
-    const scaleSelect = screen.getByLabelText('Scale name');
+    const scaleSelect = screen.getByLabelText('Scale');
     expect(rootSelect.value).toBe('C');
     expect(scaleSelect.value).toBe('Major');
   });
@@ -36,7 +36,7 @@ describe('KeyExplorer', () => {
 
   it('cambiar el select de scale a Minor actualiza el contexto', () => {
     renderWithProvider(<KeyExplorer />);
-    const scaleSelect = screen.getByLabelText('Scale name');
+    const scaleSelect = screen.getByLabelText('Scale');
     fireEvent.change(scaleSelect, { target: { value: 'Minor' } });
     expect(scaleSelect.value).toBe('Minor');
   });
@@ -49,7 +49,7 @@ describe('KeyExplorer', () => {
 
   it('renderiza 7 chips para escala Minor (7 notas)', () => {
     renderWithProvider(<KeyExplorer />);
-    const scaleSelect = screen.getByLabelText('Scale name');
+    const scaleSelect = screen.getByLabelText('Scale');
     fireEvent.change(scaleSelect, { target: { value: 'Minor' } });
     const chips = document.querySelectorAll('.key-note-chip');
     expect(chips).toHaveLength(7);
@@ -57,7 +57,7 @@ describe('KeyExplorer', () => {
 
   it('renderiza 5 chips para Pentatonic Maj', () => {
     renderWithProvider(<KeyExplorer />);
-    const scaleSelect = screen.getByLabelText('Scale name');
+    const scaleSelect = screen.getByLabelText('Scale');
     fireEvent.change(scaleSelect, { target: { value: 'Pentatonic Maj' } });
     const chips = document.querySelectorAll('.key-note-chip');
     expect(chips).toHaveLength(5);
