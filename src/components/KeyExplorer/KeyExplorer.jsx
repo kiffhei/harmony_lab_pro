@@ -189,9 +189,10 @@ export default function KeyExplorer() {
       style={{
         display:             'grid',
         gridTemplateColumns: '1fr 1fr',
-        gap:                 'var(--s-5)',
-        padding:             'var(--s-5)',
+        gap:                 'var(--s-4)',
+        padding:             'var(--s-4)',
         height:              '100%',
+        minHeight:           0,
         alignItems:          'start',
       }}
     >
@@ -199,7 +200,7 @@ export default function KeyExplorer() {
       <div className="key-tonality-bg" aria-hidden="true" />
 
       {/* ── COLUMNA IZQUIERDA — solo el SVG ───────────────────────────── */}
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', paddingTop: 'var(--s-3)' }}>
         <div className="circle-of-fifths-wrapper">
           <svg
             viewBox="0 0 320 320"
@@ -287,7 +288,7 @@ export default function KeyExplorer() {
       </div>
 
       {/* ── COLUMNA DERECHA — selectores + info ───────────────────────── */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-4)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-3)', height: '100%', minHeight: 0, overflowY: 'auto', paddingRight: 'var(--s-2)' }}>
 
         {/* Selectores */}
         <div className="key-explorer-selectors">

@@ -134,7 +134,7 @@ export default function DesktopLayout() {
 
       {/* ── Main area — flex-1 ───────────────────────────────────────────── */}
       <main className="app-main bg-[var(--c-bg)]">
-        <div className="app-content flex flex-col">
+        <div className="app-content flex flex-col h-full min-h-0">
           {showSplash
             ? <Splash onNavigate={handleNavigate} />
             : activeModule === 'Key Explorer'

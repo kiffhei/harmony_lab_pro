@@ -33,8 +33,9 @@
 
 .circle-of-fifths-wrapper {
   position: relative;
-  width: min(480px, 44vw);
+  width: min(400px, 40vw);
   aspect-ratio: 1;
+  flex-shrink: 0;
 }
 
 /* SVG del círculo — dibujado por React */
@@ -163,7 +164,7 @@
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: var(--s-2) var(--s-3);
+  padding: var(--s-1) var(--s-2);
   background: var(--c-elevated);
   border: 1px solid var(--c-border);
   border-radius: var(--r-md);
@@ -174,7 +175,7 @@
     box-shadow   var(--dur-fast),
     transform    var(--dur-fast) var(--ease-spring);
   user-select: none;
-  min-width: 44px;
+  min-width: 40px;
   text-align: center;
 }
 .key-note-chip:hover {
@@ -217,6 +218,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--s-2);
+  flex-shrink: 1;
 }
 
 .key-degree-row {
@@ -285,7 +287,7 @@
 
 .key-mood-banner {
   width: 100%;
-  padding: var(--s-3) var(--s-4);
+  padding: var(--s-2) var(--s-3);
   border-radius: var(--r-md);
   border-left: 3px solid var(--mood-color);
   background: color-mix(in srgb, var(--mood-color) 8%, var(--c-elevated));
