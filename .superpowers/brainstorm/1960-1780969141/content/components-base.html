@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmony Lab Pro — Componentes Base</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #080c1a;
+    color: #e8eaf0;
+    font-family: 'Barlow', system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 28px 24px 56px;
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #f59e0b;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  /* Layout: 3 columns, one per style direction */
+  .columns {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 1100px;
+  }
+
+  .col {
+    background: #0f1424;
+    border: 1px solid #2a3350;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+  .col:hover { border-color: #8b5cf6; transform: translateY(-2px); }
+  .col.selected {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 1px #f59e0b, 0 0 18px rgba(245,158,11,0.14);
+  }
+
+  .col-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #9ca3b8;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #1c2238;
+  }
+
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #374151;
+    margin-bottom: 10px;
+    margin-top: 16px;
+  }
+  .section-title:first-of-type { margin-top: 0; }
+
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 6px; }
+
+  /* ══════════════════════════════════════════
+     DIRECTION A — Industrial / Angular
+     Bordes rectos, letras en caps, sin border-radius,
+     todo mayúsculas, sensación de hardware físico.
+  ══════════════════════════════════════════ */
+
+  /* Buttons A */
+  .btn-a-primary {
+    background: #f59e0b;
+    color: #080c1a;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .btn-a-secondary {
+    background: transparent;
+    color: #e8eaf0;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 7px 15px;
+    border: 1px solid #2a3350;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .btn-a-ghost {
+    background: transparent;
+    color: #6b7280;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 7px 15px;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-a-destructive {
+    background: transparent;
+    color: #ef4444;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 7px 15px;
+    border: 1px solid rgba(239,68,68,0.35);
+    border-radius: 2px;
+    cursor: pointer;
+  }
+
+  /* Card A */
+  .card-a {
+    background: #161c30;
+    border: 1px solid #2a3350;
+    border-radius: 2px;
+    padding: 12px;
+    margin-bottom: 6px;
+  }
+  .card-a-interactive {
+    background: #161c30;
+    border: 1px solid #f59e0b;
+    border-radius: 2px;
+    padding: 12px;
+    margin-bottom: 6px;
+    box-shadow: 0 0 0 0px rgba(245,158,11,0.1);
+  }
+  .card-a-title { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #e8eaf0; }
+  .card-a-sub { font-size: 10px; color: #6b7280; margin-top: 3px; letter-spacing: 0.04em; }
+
+  /* Input A */
+  .input-a {
+    background: #080c1a;
+    border: 1px solid #2a3350;
+    border-radius: 2px;
+    color: #e8eaf0;
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    padding: 7px 10px;
+    width: 100%;
+    outline: none;
+  }
+  .input-a-focus {
+    background: #080c1a;
+    border: 1px solid #f59e0b;
+    border-radius: 2px;
+    color: #e8eaf0;
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    padding: 7px 10px;
+    width: 100%;
+    box-shadow: 0 0 0 2px rgba(245,158,11,0.12);
+    outline: none;
+  }
+
+  /* Slider A */
+  .slider-a-wrap { width: 100%; padding: 4px 0; }
+  .slider-a-track { height: 3px; background: #2a3350; border-radius: 0; position: relative; }
+  .slider-a-fill { height: 3px; background: #f59e0b; width: 60%; }
+  .slider-a-thumb { width: 10px; height: 18px; background: #f59e0b; border-radius: 1px; position: absolute; top: -7.5px; left: calc(60% - 5px); }
+
+  /* Badge A */
+  .badge-a { display: inline-flex; align-items: center; gap: 4px; font-family: 'Barlow Condensed', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; padding: 2px 6px; border-radius: 1px; }
+  .badge-a-amber { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+  .badge-a-green  { background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.25); }
+  .badge-a-red    { background: rgba(239,68,68,0.12);  color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
+
+  /* Seq step A */
+  .step-a { width: 24px; height: 24px; background: #161c30; border: 1px solid #2a3350; border-radius: 2px; }
+  .step-a-on { width: 24px; height: 24px; background: #d44d0a; border: 1px solid #d44d0a; border-radius: 2px; box-shadow: 0 0 6px rgba(212,77,10,0.5); }
+  .step-row { display: flex; gap: 3px; }
+
+  /* ══════════════════════════════════════════
+     DIRECTION B — Rounded / Soft Glow
+     Border-radius generosos, sombras suaves,
+     estado activo = glow de color. Más moderno.
+  ══════════════════════════════════════════ */
+
+  .btn-b-primary {
+    background: #f59e0b;
+    color: #080c1a;
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(245,158,11,0.28);
+  }
+  .btn-b-secondary {
+    background: #161c30;
+    color: #e8eaf0;
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 18px;
+    border: 1px solid #2a3350;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .btn-b-ghost {
+    background: transparent;
+    color: #9ca3b8;
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 7px 16px;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-b-destructive {
+    background: rgba(239,68,68,0.1);
+    color: #ef4444;
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .card-b {
+    background: #161c30;
+    border: 1px solid #2a3350;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 6px;
+  }
+  .card-b-interactive {
+    background: #1e263e;
+    border: 1px solid rgba(245,158,11,0.35);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 6px;
+    box-shadow: 0 0 16px rgba(245,158,11,0.08);
+  }
+  .card-b-title { font-size: 12px; font-weight: 600; color: #e8eaf0; }
+  .card-b-sub { font-size: 10px; color: #6b7280; margin-top: 3px; }
+
+  .input-b {
+    background: #161c30;
+    border: 1px solid #2a3350;
+    border-radius: 8px;
+    color: #e8eaf0;
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    padding: 8px 12px;
+    width: 100%;
+    outline: none;
+  }
+  .input-b-focus {
+    background: #161c30;
+    border: 1px solid #8b5cf6;
+    border-radius: 8px;
+    color: #e8eaf0;
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    padding: 8px 12px;
+    width: 100%;
+    box-shadow: 0 0 0 3px rgba(139,92,246,0.12);
+    outline: none;
+  }
+
+  .slider-b-track { height: 4px; background: #2a3350; border-radius: 4px; position: relative; }
+  .slider-b-fill { height: 4px; background: linear-gradient(90deg, #f59e0b, #fbbf24); width: 60%; border-radius: 4px; }
+  .slider-b-thumb { width: 14px; height: 14px; background: #fbbf24; border-radius: 50%; position: absolute; top: -5px; left: calc(60% - 7px); box-shadow: 0 0 8px rgba(245,158,11,0.5); }
+
+  .badge-b { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 9999px; }
+  .badge-b-amber { background: rgba(245,158,11,0.15); color: #fbbf24; }
+  .badge-b-green  { background: rgba(16,185,129,0.12); color: #34d399; }
+  .badge-b-red    { background: rgba(239,68,68,0.12);  color: #f87171; }
+
+  .step-b { width: 24px; height: 24px; background: #161c30; border: 1px solid #2a3350; border-radius: 5px; }
+  .step-b-on { width: 24px; height: 24px; background: #d44d0a; border: 1px solid transparent; border-radius: 5px; box-shadow: 0 0 8px rgba(212,77,10,0.55); }
+
+  /* ══════════════════════════════════════════
+     DIRECTION C — Mixed / Contextual
+     Angular para datos y hardware (sequencer, piano labels),
+     redondeado para controles de usuario (botones, inputs).
+     Lo mejor de ambos mundos.
+  ══════════════════════════════════════════ */
+
+  .btn-c-primary {
+    background: #f59e0b;
+    color: #080c1a;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(245,158,11,0.2);
+  }
+  .btn-c-secondary {
+    background: transparent;
+    color: #e8eaf0;
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 16px;
+    border: 1px solid #2a3350;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .btn-c-ghost {
+    background: transparent;
+    color: #9ca3b8;
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 7px 14px;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-c-destructive {
+    background: transparent;
+    color: #ef4444;
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 14px;
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .card-c {
+    background: #161c30;
+    border: 1px solid #2a3350;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 6px;
+  }
+  .card-c-interactive {
+    background: #161c30;
+    border: 1px solid rgba(245,158,11,0.4);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 6px;
+    box-shadow: inset 0 0 0 0px #f59e0b, 0 0 12px rgba(245,158,11,0.1);
+  }
+  .card-c-title { font-family: 'Barlow', sans-serif; font-size: 12px; font-weight: 600; color: #e8eaf0; }
+  .card-c-sub { font-size: 10px; color: #6b7280; margin-top: 3px; }
+
+  .input-c {
+    background: #161c30;
+    border: 1px solid #2a3350;
+    border-radius: 4px;
+    color: #e8eaf0;
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    padding: 8px 10px;
+    width: 100%;
+    outline: none;
+  }
+  .input-c-focus {
+    background: #161c30;
+    border: 1px solid #f59e0b;
+    border-radius: 4px;
+    color: #e8eaf0;
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    padding: 8px 10px;
+    width: 100%;
+    box-shadow: 0 0 0 2px rgba(245,158,11,0.14);
+    outline: none;
+  }
+
+  .slider-c-track { height: 4px; background: #2a3350; border-radius: 2px; position: relative; }
+  .slider-c-fill { height: 4px; background: #f59e0b; width: 60%; border-radius: 2px; }
+  .slider-c-thumb { width: 12px; height: 12px; background: #f59e0b; border-radius: 2px; position: absolute; top: -4px; left: calc(60% - 6px); box-shadow: 0 0 6px rgba(245,158,11,0.4); }
+
+  .badge-c { display: inline-flex; align-items: center; gap: 4px; font-family: 'Barlow Condensed', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; }
+  .badge-c-amber { background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.25); }
+  .badge-c-green  { background: rgba(16,185,129,0.1);  color: #10b981; border: 1px solid rgba(16,185,129,0.22); }
+  .badge-c-red    { background: rgba(239,68,68,0.1);   color: #ef4444; border: 1px solid rgba(239,68,68,0.22); }
+
+  .step-c { width: 24px; height: 24px; background: #161c30; border: 1px solid #2a3350; border-radius: 3px; }
+  .step-c-on { width: 24px; height: 24px; background: #d44d0a; border: 1px solid #d44d0a; border-radius: 3px; box-shadow: 0 0 7px rgba(212,77,10,0.5); }
+
+  /* Shared */
+  .col-choice-label {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid #1c2238;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .col-choice-desc {
+    font-size: 10px;
+    color: #6b7280;
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  .tag-inline {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 2px;
+    color: #f59e0b;
+    background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.2);
+  }
+
+  .hint {
+    margin-top: 28px;
+    font-size: 11px;
+    color: #374151;
+    letter-spacing: 0.06em;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<h1>Componentes Base — Dirección Visual</h1>
+<p class="subtitle">Buttons · Cards · Input · Slider · Badges · Sequencer steps<br>
+¿Qué lenguaje visual debe tener el sistema de componentes?</p>
+
+<div class="columns">
+
+  <!-- COLUMN A: Industrial / Angular -->
+  <div class="col" data-choice="a" onclick="toggleSelect(this)">
+    <div class="col-label">A — Industrial · Angular</div>
+
+    <div class="section-title">Buttons</div>
+    <div class="row">
+      <button class="btn-a-primary">Play</button>
+      <button class="btn-a-secondary">Export</button>
+      <button class="btn-a-ghost">Cancel</button>
+    </div>
+    <div class="row">
+      <button class="btn-a-destructive">Delete</button>
+    </div>
+
+    <div class="section-title">Cards</div>
+    <div class="card-a">
+      <div class="card-a-title">C Major</div>
+      <div class="card-a-sub">Diatonic · I · Tónica</div>
+    </div>
+    <div class="card-a-interactive">
+      <div class="card-a-title" style="color:#f59e0b;">Am7 — Active</div>
+      <div class="card-a-sub">vi · Relativa menor</div>
+    </div>
+
+    <div class="section-title">Input &amp; Slider</div>
+    <input class="input-a" placeholder="Buscar acorde…" readonly style="margin-bottom:8px;">
+    <div class="slider-a-wrap">
+      <div class="slider-a-track">
+        <div class="slider-a-fill"></div>
+        <div class="slider-a-thumb"></div>
+      </div>
+    </div>
+
+    <div class="section-title">Badges</div>
+    <div class="row">
+      <span class="badge-a badge-a-amber">C Major</span>
+      <span class="badge-a badge-a-green">Afinado</span>
+      <span class="badge-a badge-a-red">+12¢</span>
+    </div>
+
+    <div class="section-title">Sequencer Steps</div>
+    <div class="step-row">
+      <div class="step-a-on"></div>
+      <div class="step-a"></div>
+      <div class="step-a"></div>
+      <div class="step-a-on"></div>
+      <div class="step-a"></div>
+      <div class="step-a"></div>
+      <div class="step-a-on"></div>
+      <div class="step-a"></div>
+    </div>
+
+    <div class="col-choice-label">Industrial · Hardware</div>
+    <p class="col-choice-desc">Sin border-radius, letras en caps Barlow Condensed. Sensación de serigrafía en hardware. Cada botón parece un pulsador físico.</p>
+    <span class="tag-inline">TE · Korg</span>
+  </div>
+
+  <!-- COLUMN B: Rounded / Soft Glow -->
+  <div class="col" data-choice="b" onclick="toggleSelect(this)">
+    <div class="col-label">B — Rounded · Soft Glow</div>
+
+    <div class="section-title">Buttons</div>
+    <div class="row">
+      <button class="btn-b-primary">Play</button>
+      <button class="btn-b-secondary">Export</button>
+      <button class="btn-b-ghost">Cancel</button>
+    </div>
+    <div class="row">
+      <button class="btn-b-destructive">Delete</button>
+    </div>
+
+    <div class="section-title">Cards</div>
+    <div class="card-b">
+      <div class="card-b-title">C Major</div>
+      <div class="card-b-sub">Diatonic · I · Tónica</div>
+    </div>
+    <div class="card-b-interactive">
+      <div class="card-b-title" style="color:#fbbf24;">Am7 — Active</div>
+      <div class="card-b-sub">vi · Relativa menor</div>
+    </div>
+
+    <div class="section-title">Input &amp; Slider</div>
+    <input class="input-b" placeholder="Buscar acorde…" readonly style="margin-bottom:8px;">
+    <div style="padding: 4px 0;">
+      <div class="slider-b-track">
+        <div class="slider-b-fill"></div>
+        <div class="slider-b-thumb"></div>
+      </div>
+    </div>
+
+    <div class="section-title">Badges</div>
+    <div class="row">
+      <span class="badge-b badge-b-amber">C Major</span>
+      <span class="badge-b badge-b-green">Afinado</span>
+      <span class="badge-b badge-b-red">+12¢</span>
+    </div>
+
+    <div class="section-title">Sequencer Steps</div>
+    <div class="step-row">
+      <div class="step-b-on"></div>
+      <div class="step-b"></div>
+      <div class="step-b"></div>
+      <div class="step-b-on"></div>
+      <div class="step-b"></div>
+      <div class="step-b"></div>
+      <div class="step-b-on"></div>
+      <div class="step-b"></div>
+    </div>
+
+    <div class="col-choice-label">Moderno · Glow</div>
+    <p class="col-choice-desc">Border-radius generosos, glow sutil en activos, slider con thumb circular. Más cercano a apps modernas de audio (Endlesss, Koala Sampler).</p>
+    <span class="tag-inline">Novation · Modern</span>
+  </div>
+
+  <!-- COLUMN C: Mixed / Contextual -->
+  <div class="col" data-choice="c" onclick="toggleSelect(this)">
+    <div class="col-label">C — Mixed · Contextual ★</div>
+
+    <div class="section-title">Buttons</div>
+    <div class="row">
+      <button class="btn-c-primary">Play</button>
+      <button class="btn-c-secondary">Export</button>
+      <button class="btn-c-ghost">Cancel</button>
+    </div>
+    <div class="row">
+      <button class="btn-c-destructive">Delete</button>
+    </div>
+
+    <div class="section-title">Cards</div>
+    <div class="card-c">
+      <div class="card-c-title">C Major</div>
+      <div class="card-c-sub">Diatonic · I · Tónica</div>
+    </div>
+    <div class="card-c-interactive">
+      <div class="card-c-title" style="color:#f59e0b;">Am7 — Active</div>
+      <div class="card-c-sub">vi · Relativa menor</div>
+    </div>
+
+    <div class="section-title">Input &amp; Slider</div>
+    <input class="input-c" placeholder="Buscar acorde…" readonly style="margin-bottom:8px;">
+    <div style="padding: 4px 0;">
+      <div class="slider-c-track">
+        <div class="slider-c-fill"></div>
+        <div class="slider-c-thumb"></div>
+      </div>
+    </div>
+
+    <div class="section-title">Badges</div>
+    <div class="row">
+      <span class="badge-c badge-c-amber">C Major</span>
+      <span class="badge-c badge-c-green">Afinado</span>
+      <span class="badge-c badge-c-red">+12¢</span>
+    </div>
+
+    <div class="section-title">Sequencer Steps</div>
+    <div class="step-row">
+      <div class="step-c-on"></div>
+      <div class="step-c"></div>
+      <div class="step-c"></div>
+      <div class="step-c-on"></div>
+      <div class="step-c"></div>
+      <div class="step-c"></div>
+      <div class="step-c-on"></div>
+      <div class="step-c"></div>
+    </div>
+
+    <div class="col-choice-label">Mixed · Contextual ★</div>
+    <p class="col-choice-desc">r=4px para UI de usuario, r=2px para hardware (steps, badges técnicos). Armoniza el carácter de instrumento con la usabilidad moderna. Recomendado.</p>
+    <span class="tag-inline">TE × Novation</span>
+  </div>
+
+</div>
+
+<p class="hint">★ = dirección recomendada · Haz clic para seleccionar</p>
+
+<script>
+function toggleSelect(el) {
+  document.querySelectorAll('.col').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  if (window.recordChoice) window.recordChoice(el.dataset.choice, el.querySelector('.col-label').textContent);
+}
+</script>
+</body>
+</html>
