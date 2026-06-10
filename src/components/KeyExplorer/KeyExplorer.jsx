@@ -184,196 +184,211 @@ export default function KeyExplorer() {
   }, [scaleNotes]);
 
   return (
-    <div className="key-explorer-module">
-
+    <div
+      className="key-explorer-module"
+      style={{
+        display:             'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap:                 'var(--s-5)',
+        padding:             'var(--s-5)',
+        height:              '100%',
+        alignItems:          'start',
+      }}
+    >
       {/* Background reactivo a --active-key-color + --active-scale-color */}
       <div className="key-tonality-bg" aria-hidden="true" />
 
-      {/* ── Sección 1 — Selectores ─────────────────────────────────────── */}
-      <div className="key-explorer-selectors">
-        <div className="flex flex-col gap-[var(--s-1)] flex-1 min-w-0">
-          <label
-            htmlFor="ke-root"
-            className="font-[family-name:var(--font-condensed)] text-[length:var(--text-2xs)] font-semibold tracking-[var(--ls-wide)] uppercase text-[var(--c-text-secondary)]"
+      {/* ── COLUMNA IZQUIERDA — solo el SVG ───────────────────────────── */}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div className="circle-of-fifths-wrapper">
+          <svg
+            viewBox="0 0 320 320"
+            className="circle-of-fifths-svg"
+            data-testid="cof-svg"
           >
-            ROOT NOTE
-          </label>
-          <select
-            id="ke-root"
-            name="ke-root"
-            className="select w-full"
-            value={rootNote}
-            aria-label="Root note"
-            onChange={(e) => setRootNote(e.target.value)}
-          >
-            {NOTES.map((note) => (
-              <option key={note} value={note}>{note}</option>
-            ))}
-          </select>
-        </div>
+            {/* Anillos orbitales decorativos */}
+            <circle cx="160" cy="160" r="130" className="cof-orbit-outer" />
+            <circle cx="160" cy="160" r="110" className="cof-orbit-inner" />
 
-        <div className="flex flex-col gap-[var(--s-1)] flex-1 min-w-0">
-          <label
-            htmlFor="ke-scale"
-            className="font-[family-name:var(--font-condensed)] text-[length:var(--text-2xs)] font-semibold tracking-[var(--ls-wide)] uppercase text-[var(--c-text-secondary)]"
-          >
-            SCALE
-          </label>
-          <select
-            id="ke-scale"
-            name="ke-scale"
-            className="select w-full"
-            value={scaleName}
-            aria-label="Scale"
-            onChange={(e) => setScaleName(e.target.value)}
-          >
-            {scaleNames.map((name) => (
-              <option key={name} value={name}>{name}</option>
-            ))}
-          </select>
-        </div>
-      </div>
+            {/* Líneas de escala */}
+            {scaleLinePoints && (
+              <polyline
+                points={scaleLinePoints}
+                className="cof-scale-line visible"
+              />
+            )}
 
-      {/* ── Sección 1B — MoodBanner ────────────────────────────────────── */}
-      <MoodBanner scaleName={scaleName} />
+            {/* Nodos de notas */}
+            {COF_ORDER.map((note, i) => {
+              const { cx, cy } = cofPosition(i);
+              const isActive  = note === rootNote;
+              const isInScale = scaleSet.has(note);
+              const nodeClass = [
+                'cof-note-node',
+                isActive  ? 'active'   : '',
+                isInScale ? 'in-scale' : 'out-scale',
+              ].filter(Boolean).join(' ');
+              const color = noteColor(note);
 
-      {/* ── Sección 2 — Circle of Fifths ──────────────────────────────── */}
-      <div className="circle-of-fifths-wrapper">
-        <svg
-          viewBox="0 0 320 320"
-          className="circle-of-fifths-svg"
-          data-testid="cof-svg"
-        >
-          {/* Anillos orbitales decorativos */}
-          <circle cx="160" cy="160" r="130" className="cof-orbit-outer" />
-          <circle cx="160" cy="160" r="110" className="cof-orbit-inner" />
+              return (
+                <g
+                  key={note}
+                  className={nodeClass}
+                  onClick={() => setRootNote(note)}
+                  data-testid={`cof-node-${note}`}
+                  role="button"
+                  aria-label={`Set root note to ${note}`}
+                >
+                  <circle
+                    cx={cx}
+                    cy={cy}
+                    r={NODE_RADIUS}
+                    className="cof-note-circle"
+                    style={{ fill: color, stroke: color }}
+                  />
+                  <text x={cx} y={cy} className="cof-note-text">
+                    {note}
+                  </text>
+                </g>
+              );
+            })}
 
-          {/* Líneas de escala */}
-          {scaleLinePoints && (
-            <polyline
-              points={scaleLinePoints}
-              className="cof-scale-line visible"
-            />
-          )}
-
-          {/* Nodos de notas */}
-          {COF_ORDER.map((note, i) => {
-            const { cx, cy } = cofPosition(i);
-            const isActive  = note === rootNote;
-            const isInScale = scaleSet.has(note);
-            const nodeClass = [
-              'cof-note-node',
-              isActive  ? 'active'   : '',
-              isInScale ? 'in-scale' : 'out-scale',
-            ].filter(Boolean).join(' ');
-            const color = noteColor(note);
-
-            return (
-              <g
-                key={note}
-                className={nodeClass}
-                onClick={() => setRootNote(note)}
-                data-testid={`cof-node-${note}`}
-                role="button"
-                aria-label={`Set root note to ${note}`}
-              >
-                <circle
-                  cx={cx}
-                  cy={cy}
-                  r={NODE_RADIUS}
-                  className="cof-note-circle"
-                  style={{ fill: color, stroke: color }}
-                />
-                <text x={cx} y={cy} className="cof-note-text">
-                  {note}
-                </text>
-              </g>
-            );
-          })}
-
-          {/* Nodo central — spring animation al cambiar rootNote */}
-          <motion.g
-            key={rootNote}
-            transform={`translate(${COF_CENTER}, ${COF_CENTER})`}
-            initial={{ scale: 0.9 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            style={{ originX: 0, originY: 0 }}
-          >
-            <circle
-              cx={0}
-              cy={0}
-              r={28}
-              className="cof-center-circle"
-              style={{
-                fill:        'rgba(245,158,11,0.15)',
-                stroke:      'var(--c-amber)',
-                strokeWidth: 1.5,
-              }}
-            />
-            <text className="cof-center-text" textAnchor="middle">
-              <tspan x={0} dy="-4" fontSize="14" fontWeight="800">
-                {rootNote}
-              </tspan>
-              <tspan x={0} dy="13" fontSize="9">
-                {scaleName.length > 8 ? scaleName.slice(0, 8) : scaleName}
-              </tspan>
-            </text>
-          </motion.g>
-        </svg>
-      </div>
-
-      {/* ── Sección 3 — Chips de notas de la escala ───────────────────── */}
-      <div className="key-explorer-scale-notes">
-        <AnimatePresence mode="popLayout">
-          {diatonic.map((chord, index) => (
-            <motion.button
-              key={`chip-${chord.root}-${index}`}
-              className={`key-note-chip${chord.root === rootNote ? ' active' : ''}`}
-              onClick={() => setRootNote(chord.root)}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.04 }}
+            {/* Nodo central — spring animation al cambiar rootNote */}
+            <motion.g
+              key={rootNote}
+              transform={`translate(${COF_CENTER}, ${COF_CENTER})`}
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              style={{ originX: 0, originY: 0 }}
             >
-              <span className="key-note-chip-name">{chord.root}</span>
-              <span className="key-note-chip-degree">{chord.roman}</span>
-            </motion.button>
-          ))}
-        </AnimatePresence>
+              <circle
+                cx={0}
+                cy={0}
+                r={28}
+                className="cof-center-circle"
+                style={{
+                  fill:        'rgba(245,158,11,0.15)',
+                  stroke:      'var(--c-amber)',
+                  strokeWidth: 1.5,
+                }}
+              />
+              <text className="cof-center-text" textAnchor="middle">
+                <tspan x={0} dy="-4" fontSize="14" fontWeight="800">
+                  {rootNote}
+                </tspan>
+                <tspan x={0} dy="13" fontSize="9">
+                  {scaleName.length > 8 ? scaleName.slice(0, 8) : scaleName}
+                </tspan>
+              </text>
+            </motion.g>
+          </svg>
+        </div>
       </div>
 
-      {/* ── Sección 4 — Tabla de grados diatónicos ────────────────────── */}
-      <div className="key-explorer-degrees">
-        <AnimatePresence mode="popLayout">
-          {diatonic.map((chord, index) => {
-            const suffix   = QUALITY_SUFFIX[chord.quality] ?? '';
-            const harmFunc = DEGREE_FUNCTION[chord.roman]  ?? '';
-            const isActive = activeChord?.roman === chord.roman;
+      {/* ── COLUMNA DERECHA — selectores + info ───────────────────────── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-4)' }}>
 
-            return (
-              <motion.div
-                key={`row-${chord.root}-${index}`}
-                className={`key-degree-row${isActive ? ' active' : ''}`}
-                role="button"
-                onClick={() => setActiveChord({
-                  root:    chord.root,
-                  quality: chord.quality,
-                  roman:   chord.roman,
-                  notes:   chord.notes,
-                })}
+        {/* Selectores */}
+        <div className="key-explorer-selectors">
+          <div className="flex flex-col gap-[var(--s-1)] flex-1 min-w-0">
+            <label
+              htmlFor="ke-root"
+              className="font-[family-name:var(--font-condensed)] text-[length:var(--text-2xs)] font-semibold tracking-[var(--ls-wide)] uppercase text-[var(--c-text-secondary)]"
+            >
+              ROOT NOTE
+            </label>
+            <select
+              id="ke-root"
+              name="ke-root"
+              className="select w-full"
+              value={rootNote}
+              aria-label="Root note"
+              onChange={(e) => setRootNote(e.target.value)}
+            >
+              {NOTES.map((note) => (
+                <option key={note} value={note}>{note}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-[var(--s-1)] flex-1 min-w-0">
+            <label
+              htmlFor="ke-scale"
+              className="font-[family-name:var(--font-condensed)] text-[length:var(--text-2xs)] font-semibold tracking-[var(--ls-wide)] uppercase text-[var(--c-text-secondary)]"
+            >
+              SCALE
+            </label>
+            <select
+              id="ke-scale"
+              name="ke-scale"
+              className="select w-full"
+              value={scaleName}
+              aria-label="Scale"
+              onChange={(e) => setScaleName(e.target.value)}
+            >
+              {scaleNames.map((name) => (
+                <option key={name} value={name}>{name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* MoodBanner */}
+        <MoodBanner scaleName={scaleName} />
+
+        {/* Scale notes chips */}
+        <div className="key-explorer-scale-notes">
+          <AnimatePresence mode="popLayout">
+            {diatonic.map((chord, index) => (
+              <motion.button
+                key={`chip-${chord.root}-${index}`}
+                className={`key-note-chip${chord.root === rootNote ? ' active' : ''}`}
+                onClick={() => setRootNote(chord.root)}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.03 }}
+                transition={{ delay: index * 0.04 }}
               >
-                <span className="key-degree-roman">{chord.roman}</span>
-                <span className="key-degree-chord">{chord.root}{suffix}</span>
-                <span className="key-degree-function">{harmFunc}</span>
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
-      </div>
+                <span className="key-note-chip-name">{chord.root}</span>
+                <span className="key-note-chip-degree">{chord.roman}</span>
+              </motion.button>
+            ))}
+          </AnimatePresence>
+        </div>
 
+        {/* Degrees table */}
+        <div className="key-explorer-degrees">
+          <AnimatePresence mode="popLayout">
+            {diatonic.map((chord, index) => {
+              const suffix   = QUALITY_SUFFIX[chord.quality] ?? '';
+              const harmFunc = DEGREE_FUNCTION[chord.roman]  ?? '';
+              const isActive = activeChord?.roman === chord.roman;
+
+              return (
+                <motion.div
+                  key={`row-${chord.root}-${index}`}
+                  className={`key-degree-row${isActive ? ' active' : ''}`}
+                  role="button"
+                  onClick={() => setActiveChord({
+                    root:    chord.root,
+                    quality: chord.quality,
+                    roman:   chord.roman,
+                    notes:   chord.notes,
+                  })}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.03 }}
+                >
+                  <span className="key-degree-roman">{chord.roman}</span>
+                  <span className="key-degree-chord">{chord.root}{suffix}</span>
+                  <span className="key-degree-function">{harmFunc}</span>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+
+      </div>
     </div>
   );
 }
