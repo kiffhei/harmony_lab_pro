@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmony Lab Pro — Sesión 3 · Identidad por Módulo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #080c1a;
+  color: #e8eaf0;
+  font-family: 'Barlow', sans-serif;
+  padding: 28px 24px 56px;
+  min-height: 100vh;
+}
+h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #f59e0b;
+  margin-bottom: 4px;
+}
+.sub {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  max-width: 1200px;
+}
+.module {
+  background: #0f1424;
+  border: 1px solid #2a3350;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.mod-preview {
+  height: 160px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mod-body {
+  padding: 12px 14px;
+  border-top: 1px solid #1c2238;
+}
+.mod-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #e8eaf0;
+  margin-bottom: 3px;
+}
+.mod-desc {
+  font-size: 10px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+.mod-tag {
+  display: inline-block;
+  margin-top: 7px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+/* ── PIANO ── */
+.prev-piano {
+  background: linear-gradient(180deg, #1a1008 0%, #0a0808 100%);
+  flex-direction: row;
+  align-items: flex-end;
+  padding: 0;
+  gap: 0;
+  justify-content: center;
+  padding-bottom: 16px;
+}
+.pk-w {
+  width: 18px; height: 90px;
+  background: linear-gradient(180deg, #f5f0e2 0%, #e8e0c8 100%);
+  border-radius: 0 0 3px 3px;
+  border: 1px solid #b8b098;
+  border-top: none;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.8), inset 0 -2px 3px rgba(0,0,0,0.2);
+}
+.pk-w.hl {
+  background: linear-gradient(180deg, rgba(245,158,11,0.55) 0%, rgba(245,158,11,0.3) 40%, #e8e0c8 100%);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.8), 0 0 10px rgba(245,158,11,0.3);
+}
+.pk-w.root {
+  background: linear-gradient(180deg, rgba(245,158,11,0.8) 0%, rgba(245,158,11,0.5) 40%, #e8e0c8 100%);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.8), 0 0 16px rgba(245,158,11,0.5);
+}
+.pk-b {
+  width: 11px; height: 56px;
+  background: linear-gradient(180deg, #1a1a22 0%, #0a0a10 100%);
+  border-radius: 0 0 2px 2px;
+  margin: 0 -5.5px;
+  z-index: 2;
+  position: relative;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.95), inset 0 -1px 2px rgba(255,255,255,0.03);
+}
+.pk-b.hl {
+  background: linear-gradient(180deg, rgba(245,158,11,0.6) 0%, #1a1a22 60%);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.95), 0 0 8px rgba(245,158,11,0.3);
+}
+.piano-rail {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 14px;
+  background: linear-gradient(180deg, #2a1f0a 0%, #1a1208 100%);
+  border-bottom: 1px solid #3a2a10;
+}
+.piano-keys-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5px;
+}
+
+/* ── GUITAR ── */
+.prev-guitar {
+  background: linear-gradient(135deg, #1a0f06 0%, #0f0a04 100%);
+}
+.fretboard {
+  width: 88%;
+  height: 80px;
+  background: linear-gradient(180deg, #3d2008 0%, #2a1505 100%);
+  border-radius: 4px;
+  position: relative;
+  border: 1px solid #5a3010;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+  overflow: hidden;
+}
+.fret-line {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, #c8a060 0%, #a07840 100%);
+  opacity: 0.7;
+}
+.string-line {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #d0c0a0, #d0c0a0, transparent);
+}
+.fret-dot {
+  position: absolute;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(245,158,11,0.7);
+  box-shadow: 0 0 8px rgba(245,158,11,0.5);
+}
+
+/* ── SEQUENCER ── */
+.prev-seq {
+  background: #0a0c14;
+  padding: 12px;
+  flex-direction: column;
+  gap: 5px;
+  justify-content: center;
+}
+.seq-row {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+.seq-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #374151;
+  width: 24px;
+  text-align: right;
+  flex-shrink: 0;
+  margin-right: 3px;
+}
+.sq {
+  width: 14px; height: 14px;
+  border-radius: 2px;
+  background: #161c30;
+  border: 1px solid #1c2238;
+}
+.sq.k  { background: #d44d0a; border-color: transparent; box-shadow: 0 0 5px rgba(212,77,10,0.6); }
+.sq.s  { background: #f59e0b; border-color: transparent; box-shadow: 0 0 5px rgba(245,158,11,0.6); }
+.sq.hh { background: #e8c020; border-color: transparent; box-shadow: 0 0 5px rgba(232,192,32,0.5); }
+.sq.cl { background: #8b5cf6; border-color: transparent; box-shadow: 0 0 5px rgba(139,92,246,0.5); }
+.sq.pl { box-shadow: inset 0 0 0 2px rgba(245,158,11,0.5); background: rgba(245,158,11,0.08); }
+
+/* ── HARMONY MAP ── */
+.prev-harmony {
+  background: radial-gradient(ellipse at center, #0d1628 0%, #080c1a 100%);
+}
+.node-c {
+  position: absolute;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: default;
+}
+.nc-lg { width: 36px; height: 36px; font-size: 10px; }
+.nc-sm { width: 26px; height: 26px; font-size: 8px; }
+.nc-def { background: #161c30; border: 1px solid #2a3350; color: #6b7280; }
+.nc-act { background: rgba(245,158,11,0.15); border: 1px solid #f59e0b; color: #f59e0b; box-shadow: 0 0 0 2px rgba(245,158,11,0.2), 0 0 12px rgba(245,158,11,0.25); }
+.nc-sel { background: rgba(139,92,246,0.1); border: 1px solid #8b5cf6; color: #a78bfa; }
+.edge-svg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* ── TUNER ── */
+.prev-tuner {
+  background: radial-gradient(ellipse at center bottom, #0f1a10 0%, #080c0a 60%, #080c1a 100%);
+  flex-direction: column;
+  gap: 8px;
+}
+.tuner-note { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; color: #10b981; text-shadow: 0 0 16px rgba(16,185,129,0.5); letter-spacing: -0.02em; }
+.tuner-cents-val { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; color: #10b981; letter-spacing: 0.12em; }
+.tuner-bar {
+  width: 80%;
+  height: 4px;
+  background: #1c2238;
+  border-radius: 2px;
+  position: relative;
+  overflow: visible;
+}
+.tuner-bar-fill {
+  height: 4px;
+  background: #10b981;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(16,185,129,0.5);
+  width: 50%;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.tuner-needle-wrap {
+  position: relative;
+  width: 80%;
+}
+
+/* ── SONG ANALYZER ── */
+.prev-analyzer {
+  background: #060810;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px;
+  gap: 6px;
+  justify-content: center;
+}
+.osc-screen {
+  width: 100%;
+  height: 52px;
+  background: #000810;
+  border: 1px solid #0a2040;
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+}
+.osc-line {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+}
+.osc-grid-h, .osc-grid-v {
+  position: absolute;
+  background: rgba(0,80,160,0.2);
+}
+.osc-grid-h { left: 0; right: 0; height: 1px; }
+.osc-grid-v { top: 0; bottom: 0; width: 1px; }
+.osc-wave {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+}
+.analyzer-data {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+.adata {
+  background: #0a1020;
+  border: 1px solid #0a2040;
+  border-radius: 3px;
+  padding: 5px 8px;
+  flex: 1;
+}
+.adata-label { font-family: 'Barlow Condensed', sans-serif; font-size: 7px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #1e4080; }
+.adata-val { font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; color: #00cce0; margin-top: 2px; letter-spacing: 0.08em; }
+
+/* ── KEY EXPLORER ── */
+.prev-key {
+  background: radial-gradient(ellipse at center, #0d0a1a 0%, #080c1a 100%);
+  position: relative;
+}
+.circle-of-fifths {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+.cof-note {
+  position: absolute;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  transform: translate(-50%, -50%);
+}
+.orbit-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ── PATTERN LIBRARY ── */
+.prev-pattern {
+  background: #090b14;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 12px;
+  align-content: flex-start;
+}
+.pat-card {
+  background: #111828;
+  border: 1px solid #1c2238;
+  border-radius: 5px;
+  padding: 6px 7px;
+  width: calc(50% - 3px);
+}
+.pat-genre {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.pat-mini-grid {
+  display: flex;
+  gap: 1.5px;
+}
+.pmg { width: 8px; height: 8px; border-radius: 1px; background: #1e263e; }
+.pmg.on { }
+
+/* tag colors */
+.tag-piano   { background: rgba(245,158,11,0.1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
+.tag-guitar  { background: rgba(139,92,246,0.1); color: #a78bfa; border: 1px solid rgba(139,92,246,0.2); }
+.tag-seq     { background: rgba(212,77,10,0.1);  color: #f97316; border: 1px solid rgba(212,77,10,0.2); }
+.tag-harmony { background: rgba(245,158,11,0.1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
+.tag-tuner   { background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
+.tag-analyzer{ background: rgba(0,204,224,0.1);  color: #00cce0; border: 1px solid rgba(0,204,224,0.2); }
+.tag-key     { background: rgba(139,92,246,0.1); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.2); }
+.tag-pattern { background: rgba(16,185,129,0.1); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+</style>
+</head>
+<body>
+
+<h1>Sesión 3 — Identidad Visual por Módulo</h1>
+<p class="sub">8 módulos · cada uno como un instrumento real. Esta es la dirección de diseño que el agente programador va a implementar.</p>
+
+<div class="grid">
+
+  <!-- PIANO -->
+  <div class="module">
+    <div class="mod-preview prev-piano">
+      <div class="piano-rail"></div>
+      <div class="piano-keys-row">
+        <div class="pk-w root"></div><div class="pk-b"></div>
+        <div class="pk-w hl"></div><div class="pk-b hl"></div>
+        <div class="pk-w hl"></div>
+        <div class="pk-w"></div><div class="pk-b"></div>
+        <div class="pk-w hl"></div><div class="pk-b"></div>
+        <div class="pk-w hl"></div><div class="pk-b"></div>
+        <div class="pk-w hl"></div>
+        <div class="pk-w"></div><div class="pk-b"></div>
+        <div class="pk-w hl"></div>
+      </div>
+    </div>
+    <div class="mod-body">
+      <div class="mod-name">Piano</div>
+      <p class="mod-desc">Marfil envejecido, lacado negro brillante. Puntos ámbar en notas de escala. Root note con glow cálido.</p>
+      <span class="mod-tag tag-piano">Ivory · Lacquer</span>
+    </div>
+  </div>
+
+  <!-- GUITAR -->
+  <div class="module">
+    <div class="mod-preview prev-guitar">
+      <div class="fretboard">
+        <div class="fret-line" style="left:14%"></div>
+        <div class="fret-line" style="left:26%"></div>
+        <div class="fret-line" style="left:37%"></div>
+        <div class="fret-line" style="left:47%"></div>
+        <div class="fret-line" style="left:56%"></div>
+        <div class="fret-line" style="left:65%"></div>
+        <div class="fret-line" style="left:73%"></div>
+        <div class="fret-line" style="left:80%"></div>
+        <div class="fret-line" style="left:87%"></div>
+        <div class="fret-line" style="left:93%"></div>
+        <div class="string-line" style="top:15%"></div>
+        <div class="string-line" style="top:29%"></div>
+        <div class="string-line" style="top:43%"></div>
+        <div class="string-line" style="top:57%"></div>
+        <div class="string-line" style="top:71%"></div>
+        <div class="string-line" style="top:85%"></div>
+        <!-- scale dots -->
+        <div class="fret-dot" style="left:19%;top:50%;transform:translate(-50%,-50%)"></div>
+        <div class="fret-dot" style="left:41%;top:50%;transform:translate(-50%,-50%)"></div>
+        <div class="fret-dot" style="left:60%;top:50%;transform:translate(-50%,-50%)"></div>
+        <div class="fret-dot" style="left:69%;top:35%;transform:translate(-50%,-50%)"></div>
+        <div class="fret-dot" style="left:69%;top:65%;transform:translate(-50%,-50%)"></div>
+      </div>
+    </div>
+    <div class="mod-body">
+      <div class="mod-name">Guitar</div>
+      <p class="mod-desc">Diapasón de madera oscura, trastes metálicos dorados. Puntos ámbar en notas activas de la escala.</p>
+      <span class="mod-tag tag-guitar">Rosewood · Metal</span>
+    </div>
+  </div>
+
+  <!-- SEQUENCER -->
+  <div class="module">
+    <div class="mod-preview prev-seq">
+      <div class="seq-row">
+        <span class="seq-label">KICK</span>
+        <div class="sq k"></div><div class="sq"></div><div class="sq"></div><div class="sq"></div>
+        <div class="sq k pl"></div><div class="sq"></div><div class="sq"></div><div class="sq"></div>
+        <div class="sq k"></div><div class="sq"></div><div class="sq"></div><div class="sq"></div>
+        <div class="sq"></div><div class="sq k"></div><div class="sq"></div><div class="sq"></div>
+      </div>
+      <div class="seq-row">
+        <span class="seq-label">SNARE</span>
+        <div class="sq"></div><div class="sq"></div><div class="sq"></div><div class="sq"></div>
+        <div class="sq s"></div><div class="sq"></div><div class="sq"></div><div class="sq"></div>
+        <div class="sq"></div><div class="sq"></div><div class="sq"></div><div class="sq"></div>
+        <div class="sq s"></div><div class="sq"></div><div class="sq"></div><div class="sq"></div>
+      </div>
+      <div class="seq-row">
+        <span class="seq-label">HH</span>
+        <div class="sq hh"></div><div class="sq"></div><div class="sq hh"></div><div class="sq"></div>
+        <div class="sq hh"></div><div class="sq"></div><div class="sq hh"></div><div class="sq"></div>
+        <div class="sq hh"></div><div class="sq"></div><div class="sq hh"></div><div class="sq"></div>
+        <div class="sq hh"></div><div class="sq"></div><div class="sq hh"></div><div class="sq"></div>
+      </div>
+      <div class="seq-row">
+        <span class="seq-label">CLAP</span>
+        <div class="sq"></div><div class="sq"></div><div class="sq"></div><div class="sq cl"></div>
+        <div class="sq"></div><div class="sq"></div><div class="sq"></div><div class="sq cl"></div>
+        <div class="sq"></div><div class="sq"></div><div class="sq"></div><div class="sq cl"></div>
+        <div class="sq"></div><div class="sq"></div><div class="sq"></div><div class="sq cl"></div>
+      </div>
+    </div>
+    <div class="mod-body">
+      <div class="mod-name">Sequencer</div>
+      <p class="mod-desc">Drum machine física. Pasos con glow por instrumento. Playhead ámbar. LEDs de color industrial.</p>
+      <span class="mod-tag tag-seq">Hardware · LEDs</span>
+    </div>
+  </div>
+
+  <!-- HARMONY MAP -->
+  <div class="module">
+    <div class="mod-preview prev-harmony">
+      <svg class="edge-svg" viewBox="0 0 200 160">
+        <line x1="100" y1="80" x2="55" y2="45"  stroke="#2a3350" stroke-width="1" opacity="0.6"/>
+        <line x1="100" y1="80" x2="148" y2="42" stroke="#f59e0b" stroke-width="1" opacity="0.5"/>
+        <line x1="100" y1="80" x2="155" y2="105" stroke="#2a3350" stroke-width="1" opacity="0.6"/>
+        <line x1="100" y1="80" x2="52" y2="110" stroke="#2a3350" stroke-width="1" opacity="0.6"/>
+        <line x1="100" y1="80" x2="100" y2="138" stroke="#8b5cf6" stroke-width="1" opacity="0.4"/>
+      </svg>
+      <!-- I — tónica activa -->
+      <div class="node-c nc-lg nc-act" style="left:100px;top:80px;transform:translate(-50%,-50%)">I</div>
+      <!-- IV -->
+      <div class="node-c nc-sm nc-def" style="left:55px;top:45px;transform:translate(-50%,-50%)">IV</div>
+      <!-- V -->
+      <div class="node-c nc-sm nc-act" style="left:148px;top:42px;transform:translate(-50%,-50%)">V</div>
+      <!-- ii -->
+      <div class="node-c nc-sm nc-def" style="left:155px;top:105px;transform:translate(-50%,-50%)">ii</div>
+      <!-- vi -->
+      <div class="node-c nc-sm nc-sel" style="left:52px;top:110px;transform:translate(-50%,-50%)">vi</div>
+      <!-- iii -->
+      <div class="node-c nc-sm nc-def" style="left:100px;top:138px;transform:translate(-50%,-50%)">iii</div>
+    </div>
+    <div class="mod-body">
+      <div class="mod-name">Harmony Map</div>
+      <p class="mod-desc">Constelación de acordes diatónicos. Nodos conectados con relaciones armónicas. LED ámbar en activo.</p>
+      <span class="mod-tag tag-harmony">Constellation · Circuit</span>
+    </div>
+  </div>
+
+  <!-- TUNER -->
+  <div class="module">
+    <div class="mod-preview prev-tuner">
+      <div class="tuner-note">A4</div>
+      <div class="tuner-cents-val">+0.2¢</div>
+      <div class="tuner-bar">
+        <div class="tuner-bar-fill"></div>
+      </div>
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:#374151;letter-spacing:0.1em;margin-top:2px;">440.8 Hz</div>
+    </div>
+    <div class="mod-body">
+      <div class="mod-name">Tuner</div>
+      <p class="mod-desc">Instrumentación analógica. Nota en Syne 56px. Barra de cents estilo VU meter. Verde brillante cuando afinado.</p>
+      <span class="mod-tag tag-tuner">VU Meter · Analog</span>
+    </div>
+  </div>
+
+  <!-- SONG ANALYZER -->
+  <div class="module">
+    <div class="mod-preview prev-analyzer">
+      <div class="osc-screen">
+        <div class="osc-grid-h" style="top:25%"></div>
+        <div class="osc-grid-h" style="top:50%"></div>
+        <div class="osc-grid-h" style="top:75%"></div>
+        <div class="osc-grid-v" style="left:25%"></div>
+        <div class="osc-grid-v" style="left:50%"></div>
+        <div class="osc-grid-v" style="left:75%"></div>
+        <svg class="osc-wave" viewBox="0 0 200 52" preserveAspectRatio="none">
+          <path d="M0 26 C10 26,12 10,25 10 C38 10,40 42,55 42 C70 42,72 10,85 10 C98 10,100 42,115 42 C130 42,132 10,145 10 C158 10,160 42,175 42 C188 42,190 26,200 26"
+            stroke="#00cce0" stroke-width="1.5" fill="none" opacity="0.85"/>
+        </svg>
+      </div>
+      <div class="analyzer-data">
+        <div class="adata">
+          <div class="adata-label">Key</div>
+          <div class="adata-val">C Maj</div>
+        </div>
+        <div class="adata">
+          <div class="adata-label">BPM</div>
+          <div class="adata-val">124</div>
+        </div>
+        <div class="adata">
+          <div class="adata-label">Timbre</div>
+          <div class="adata-val">Warm</div>
+        </div>
+      </div>
+    </div>
+    <div class="mod-body">
+      <div class="mod-name">Song Analyzer</div>
+      <p class="mod-desc">Pantalla de osciloscopio. Cian eléctrico sobre negro. Datos en Space Mono. Laboratorio de señal.</p>
+      <span class="mod-tag tag-analyzer">Oscilloscope · Lab</span>
+    </div>
+  </div>
+
+  <!-- KEY EXPLORER -->
+  <div class="module">
+    <div class="mod-preview prev-key">
+      <!-- Circle of fifths miniatura -->
+      <div class="circle-of-fifths">
+        <div class="orbit-ring" style="width:110px;height:110px;border-color:rgba(42,51,80,0.5)"></div>
+        <div class="orbit-ring" style="width:70px;height:70px;border-color:rgba(42,51,80,0.3)"></div>
+        <!-- 12 notes around circle -->
+        <div class="cof-note" style="left:50%;top:6%;background:rgba(245,158,11,0.2);border:1px solid #f59e0b;color:#f59e0b;font-size:8px">C</div>
+        <div class="cof-note" style="left:76%;top:13%;background:#161c30;border:1px solid #2a3350;color:#6b7280;font-size:7px">G</div>
+        <div class="cof-note" style="left:95%;top:38%;background:#161c30;border:1px solid #2a3350;color:#6b7280;font-size:7px">D</div>
+        <div class="cof-note" style="left:88%;top:68%;background:rgba(16,185,129,0.15);border:1px solid #10b981;color:#10b981;font-size:7px">A</div>
+        <div class="cof-note" style="left:65%;top:90%;background:#161c30;border:1px solid #2a3350;color:#6b7280;font-size:7px">E</div>
+        <div class="cof-note" style="left:35%;top:90%;background:#161c30;border:1px solid #2a3350;color:#6b7280;font-size:7px">B</div>
+        <div class="cof-note" style="left:12%;top:68%;background:#161c30;border:1px solid #2a3350;color:#6b7280;font-size:7px">F#</div>
+        <div class="cof-note" style="left:5%;top:38%;background:#161c30;border:1px solid #2a3350;color:#6b7280;font-size:7px">C#</div>
+        <div class="cof-note" style="left:24%;top:13%;background:#161c30;border:1px solid #2a3350;color:#6b7280;font-size:7px">F</div>
+        <!-- center -->
+        <div class="cof-note nc-act" style="left:50%;top:50%;font-size:9px;width:24px;height:24px">C</div>
+      </div>
+    </div>
+    <div class="mod-body">
+      <div class="mod-name">Key Explorer</div>
+      <p class="mod-desc">Círculo de quintas visual. Cada nota con su color de tonalidad. Centro = root activa. Sistema solar armónico.</p>
+      <span class="mod-tag tag-key">Circle of Fifths</span>
+    </div>
+  </div>
+
+  <!-- PATTERN LIBRARY -->
+  <div class="module">
+    <div class="mod-preview prev-pattern">
+      <div class="pat-card">
+        <div class="pat-genre" style="color:#d44d0a">Hip-Hop</div>
+        <div class="pat-mini-grid">
+          <div class="pmg on" style="background:#d44d0a;box-shadow:0 0 3px rgba(212,77,10,0.5)"></div>
+          <div class="pmg"></div><div class="pmg"></div><div class="pmg"></div>
+          <div class="pmg on" style="background:#d44d0a;box-shadow:0 0 3px rgba(212,77,10,0.5)"></div>
+          <div class="pmg"></div>
+          <div class="pmg on" style="background:#d44d0a;box-shadow:0 0 3px rgba(212,77,10,0.5)"></div>
+          <div class="pmg"></div>
+        </div>
+      </div>
+      <div class="pat-card">
+        <div class="pat-genre" style="color:#8b5cf6">House</div>
+        <div class="pat-mini-grid">
+          <div class="pmg on" style="background:#8b5cf6;box-shadow:0 0 3px rgba(139,92,246,0.5)"></div>
+          <div class="pmg"></div>
+          <div class="pmg on" style="background:#8b5cf6;box-shadow:0 0 3px rgba(139,92,246,0.5)"></div>
+          <div class="pmg"></div>
+          <div class="pmg on" style="background:#8b5cf6;box-shadow:0 0 3px rgba(139,92,246,0.5)"></div>
+          <div class="pmg"></div>
+          <div class="pmg on" style="background:#8b5cf6;box-shadow:0 0 3px rgba(139,92,246,0.5)"></div>
+          <div class="pmg"></div>
+        </div>
+      </div>
+      <div class="pat-card">
+        <div class="pat-genre" style="color:#10b981">Reggae</div>
+        <div class="pat-mini-grid">
+          <div class="pmg"></div>
+          <div class="pmg on" style="background:#10b981;box-shadow:0 0 3px rgba(16,185,129,0.5)"></div>
+          <div class="pmg"></div>
+          <div class="pmg on" style="background:#10b981;box-shadow:0 0 3px rgba(16,185,129,0.5)"></div>
+          <div class="pmg"></div>
+          <div class="pmg on" style="background:#10b981;box-shadow:0 0 3px rgba(16,185,129,0.5)"></div>
+          <div class="pmg"></div><div class="pmg"></div>
+        </div>
+      </div>
+      <div class="pat-card">
+        <div class="pat-genre" style="color:#f59e0b">Jazz</div>
+        <div class="pat-mini-grid">
+          <div class="pmg on" style="background:#f59e0b;box-shadow:0 0 3px rgba(245,158,11,0.5)"></div>
+          <div class="pmg"></div>
+          <div class="pmg on" style="background:#f59e0b;box-shadow:0 0 3px rgba(245,158,11,0.5)"></div>
+          <div class="pmg on" style="background:#f59e0b;box-shadow:0 0 3px rgba(245,158,11,0.5)"></div>
+          <div class="pmg"></div>
+          <div class="pmg on" style="background:#f59e0b;box-shadow:0 0 3px rgba(245,158,11,0.5)"></div>
+          <div class="pmg"></div><div class="pmg"></div>
+        </div>
+      </div>
+    </div>
+    <div class="mod-body">
+      <div class="mod-name">Pattern Library</div>
+      <p class="mod-desc">Tarjetas físicas de archivo. Mini-grid de pasos por género. Color único por estilo musical.</p>
+      <span class="mod-tag tag-pattern">Archive · Cards</span>
+    </div>
+  </div>
+
+</div>
+
+<p style="margin-top:28px;font-size:11px;color:#374151;letter-spacing:0.06em;text-align:center">
+  Vista general · Sesión 3 arranca con Piano y Sequencer → luego Harmony Map, Tuner → finalmente Analyzer, Key Explorer, Guitar, Pattern Library
+</p>
+
+</body>
+</html>

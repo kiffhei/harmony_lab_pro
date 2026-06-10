@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmony Lab Pro — Sesión 2 · Splash Concept</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #080c1a;
+    color: #e8eaf0;
+    font-family: 'Barlow', system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 32px 24px 48px;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Barlow:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+  h1 {
+    font-family: 'Syne', system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #f59e0b;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 40px;
+    letter-spacing: 0.03em;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 1100px;
+  }
+
+  .card {
+    background: #0f1424;
+    border: 1px solid #2a3350;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+  .card:hover { transform: translateY(-3px); border-color: #f59e0b; }
+  .card.selected { border-color: #f59e0b; box-shadow: 0 0 0 1px #f59e0b, 0 0 20px rgba(245,158,11,0.18); }
+
+  .card-preview {
+    height: 260px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ─── Concept A: Full-bleed Expressionist ─── */
+  .preview-a {
+    background: #080c1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+  }
+  .preview-a::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 120% 60% at 30% 40%, rgba(212,77,10,0.28) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 80% at 75% 70%, rgba(139,92,246,0.22) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 40% at 60% 20%, rgba(232,192,32,0.18) 0%, transparent 50%);
+  }
+  .preview-a .logo-mark {
+    position: relative;
+    z-index: 1;
+    width: 64px;
+    height: 40px;
+  }
+  .preview-a .hero-title {
+    position: relative;
+    z-index: 1;
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    text-align: center;
+    line-height: 1.1;
+  }
+  .preview-a .hero-title span {
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    font-family: 'Barlow', sans-serif;
+    letter-spacing: 0.24em;
+    color: #f59e0b;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+  .preview-a .cta {
+    position: relative;
+    z-index: 1;
+    background: #f59e0b;
+    color: #080c1a;
+    font-family: 'Barlow', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 9px 24px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+  }
+  .preview-a .wave-line {
+    position: absolute;
+    bottom: 28px;
+    left: 0; right: 0;
+    z-index: 1;
+    overflow: visible;
+  }
+
+  /* ─── Concept B: Hardware / Instrument ─── */
+  .preview-b {
+    background: linear-gradient(180deg, #0a0c18 0%, #0f1424 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 24px;
+    gap: 0;
+  }
+  .preview-b .device-frame {
+    width: 88%;
+    background: #161c30;
+    border: 1px solid #2a3350;
+    border-radius: 8px;
+    padding: 12px 14px 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.65);
+  }
+  .preview-b .device-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .preview-b .device-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #f59e0b;
+  }
+  .preview-b .device-led {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 6px rgba(16,185,129,0.7);
+  }
+  .preview-b .device-screen {
+    background: #080c1a;
+    border-radius: 4px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    border: 1px solid #1c2238;
+  }
+  .preview-b .note-display {
+    font-family: 'Space Mono', monospace;
+    font-size: 32px;
+    font-weight: 700;
+    color: #10b981;
+    letter-spacing: 0.08em;
+  }
+  .preview-b .pads-row {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 4px;
+  }
+  .preview-b .pad {
+    height: 18px;
+    border-radius: 2px;
+    background: #1e263e;
+    border: 1px solid #2a3350;
+  }
+  .preview-b .pad.on-0 { background: #d44d0a; border-color: #d44d0a; box-shadow: 0 0 6px rgba(212,77,10,0.5); }
+  .preview-b .pad.on-1 { background: #f59e0b; border-color: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,0.5); }
+  .preview-b .pad.on-2 { background: #8b5cf6; border-color: #8b5cf6; box-shadow: 0 0 6px rgba(139,92,246,0.5); }
+  .preview-b .splash-label {
+    margin-top: 14px;
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-align: center;
+  }
+  .preview-b .splash-sub {
+    font-family: 'Barlow', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    color: #f59e0b;
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  /* ─── Concept C: Minimal / Typographic ─── */
+  .preview-c {
+    background: #080c1a;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 24px;
+  }
+  .preview-c::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 180px;
+    background: linear-gradient(0deg, rgba(139,92,246,0.12) 0%, transparent 100%);
+  }
+  .preview-c .grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(42,51,80,0.4) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(42,51,80,0.4) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  .preview-c .tag {
+    position: relative;
+    z-index: 1;
+    font-family: 'Barlow', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #8b5cf6;
+    border: 1px solid rgba(139,92,246,0.4);
+    padding: 3px 8px;
+    border-radius: 2px;
+    margin-bottom: 12px;
+  }
+  .preview-c .big-name {
+    position: relative;
+    z-index: 1;
+    font-family: 'Syne', sans-serif;
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    color: #e8eaf0;
+    margin-bottom: 12px;
+  }
+  .preview-c .big-name em {
+    display: block;
+    font-style: normal;
+    color: #f59e0b;
+  }
+  .preview-c .freq-row {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 16px;
+    align-items: baseline;
+  }
+  .preview-c .freq-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: #6b7280;
+    letter-spacing: 0.08em;
+  }
+  .preview-c .freq-val strong {
+    font-size: 13px;
+    color: #9ca3b8;
+  }
+
+  /* Card footer */
+  .card-body {
+    padding: 14px 16px 16px;
+    border-top: 1px solid #1c2238;
+  }
+  .card-title {
+    font-family: 'Syne', system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #e8eaf0;
+    margin-bottom: 4px;
+  }
+  .card-desc {
+    font-size: 11px;
+    color: #6b7280;
+    line-height: 1.5;
+  }
+  .card-tag {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 2px;
+    color: #f59e0b;
+    background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.2);
+  }
+
+  .choice-hint {
+    margin-top: 32px;
+    font-size: 11px;
+    color: #374151;
+    letter-spacing: 0.08em;
+    text-align: center;
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Barlow:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<h1>Sesión 2 · Splash Screen</h1>
+<p class="subtitle">¿Cuál dirección de entrada quieres para Harmony Lab Pro?<br>Haz clic en la que más se alinea con lo que quieres que sienta el usuario al abrir la app.</p>
+
+<div class="cards">
+
+  <!-- OPTION A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-preview preview-a">
+      <svg class="logo-mark" viewBox="0 0 64 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="8" height="40" rx="2" fill="#f59e0b"/>
+        <rect x="56" y="0" width="8" height="40" rx="2" fill="#8b5cf6"/>
+        <path d="M8 20 C18 20, 20 8, 28 8 C36 8, 36 32, 44 32 C50 32, 52 20, 56 20" stroke="url(#waveGrad)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="waveGrad" x1="8" y1="20" x2="56" y2="20" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#f59e0b"/>
+            <stop offset="100%" stop-color="#8b5cf6"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="hero-title">
+        HARMONY LAB
+        <span>Pro · Creative Studio</span>
+      </div>
+      <button class="cta">INICIAR SESIÓN</button>
+      <svg class="wave-line" viewBox="0 0 400 30" fill="none" height="30">
+        <path d="M0 15 C50 15, 55 4, 75 4 C95 4, 100 26, 120 26 C140 26, 145 4, 165 4 C185 4, 190 26, 210 26 C230 26, 235 4, 255 4 C275 4, 280 26, 300 26 C320 26, 325 4, 345 4 C365 4, 370 15, 400 15" stroke="rgba(245,158,11,0.2)" stroke-width="1" fill="none"/>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-title">A — Expresionista</div>
+      <p class="card-desc">Gradientes de alta energía, logo H·WAVE centrado, CTA directo. Máxima presencia de la paleta. Primera impresión visceral.</p>
+      <span class="card-tag">Novation vibes</span>
+    </div>
+  </div>
+
+  <!-- OPTION B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-preview preview-b">
+      <div class="device-frame">
+        <div class="device-header">
+          <div class="device-logo">H·LAB PRO</div>
+          <div class="device-led"></div>
+        </div>
+        <div class="device-screen">
+          <div class="note-display">440 Hz</div>
+        </div>
+        <div class="pads-row">
+          <div class="pad on-0"></div>
+          <div class="pad"></div>
+          <div class="pad on-1"></div>
+          <div class="pad"></div>
+          <div class="pad"></div>
+          <div class="pad on-2"></div>
+          <div class="pad"></div>
+          <div class="pad on-0"></div>
+        </div>
+      </div>
+      <div class="splash-label">HARMONY LAB</div>
+      <div class="splash-sub">Pro Edition</div>
+    </div>
+    <div class="card-body">
+      <div class="card-title">B — Hardware First</div>
+      <p class="card-desc">La splash muestra un "dispositivo" en pantalla. Comunica inmediatamente "esto es un instrumento". Fría y precisa.</p>
+      <span class="card-tag">Teenage Engineering vibes</span>
+    </div>
+  </div>
+
+  <!-- OPTION C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-preview preview-c">
+      <div class="grid-bg"></div>
+      <div class="tag">v1.0 · Harmony Lab</div>
+      <div class="big-name">
+        <em>HARMONY</em>
+        LAB PRO
+      </div>
+      <div class="freq-row">
+        <div class="freq-val"><strong>A4</strong> · 440 Hz</div>
+        <div class="freq-val"><strong>120</strong> BPM</div>
+        <div class="freq-val"><strong>C Maj</strong></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-title">C — Tipográfica</div>
+      <p class="card-desc">Syne 800 al máximo, datos técnicos en Space Mono, grid sutil. Toda la personalidad viene de la tipografía. Austero e inteligente.</p>
+      <span class="card-tag">TE × Ableton vibes</span>
+    </div>
+  </div>
+
+</div>
+
+<p class="choice-hint">Puedes seleccionar una opción haciendo clic · También puedes responder en el terminal</p>
+
+<script>
+function toggleSelect(el) {
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  if (window.recordChoice) window.recordChoice(el.dataset.choice, el.querySelector('.card-title').textContent);
+}
+</script>
+
+</body>
+</html>
