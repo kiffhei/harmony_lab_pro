@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Splash from '../components/Splash/Splash.jsx';
+import HarmonyMap from '../components/HarmonyMap/HarmonyMap.jsx';
 import KeyExplorer from '../components/KeyExplorer/KeyExplorer.jsx';
 
 const TABS = [
@@ -137,9 +138,11 @@ export default function DesktopLayout() {
         <div className="app-content flex flex-col h-full min-h-0">
           {showSplash
             ? <Splash onNavigate={handleNavigate} />
-            : activeModule === 'Key Explorer'
-              ? <KeyExplorer />
-              : <ModulePlaceholder name={activeModule} />
+            : activeModule === 'Harmony Map'
+              ? <HarmonyMap />
+              : activeModule === 'Key Explorer'
+                ? <KeyExplorer />
+                : <ModulePlaceholder name={activeModule} />
           }
         </div>
       </main>
